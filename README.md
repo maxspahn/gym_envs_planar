@@ -20,3 +20,9 @@ Actions are torques to the individual joints.
 ```python
 env = gym.make('nLink-reacher-tor-v0', n=3, dt=0.01, k=2.1)
 ```
+## Examples
+
+For a constant controlled torque, the simulation is displayed below:
+
+ 
+![Example of torque controlled environment](./assets/torques.gif) 
