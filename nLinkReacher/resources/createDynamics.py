@@ -7,10 +7,10 @@ from sys import argv
 # create variables
 def main():
     #n = int(argv[1])
-    n = 20
+    n = 15
     print("Creating dynamics for pendulum with " + str(n) + " joints, point masses")
-    name = '../output/dynamics_' + str(n) + "_Reacher.casadi"
-    dynamics = createDynamics(n)
+    name = './' + str(n) + "_Reacher.casadi"
+    dynamics, _ = createDynamics(n)
     dynamics.save(name)
 
 def createDynamics(n):
@@ -21,15 +21,15 @@ def createDynamics(n):
     m = ca.SX.sym('m', n)
     k = ca.SX.sym('k', 1)
     g = ca.SX.sym('g', 1)
-    x = ca.SX.sym('x', (n, 2))
+    fk = ca.SX.sym('x', (n, 2))
     v = ca.SX.sym('v', (n, 2))
     v_2 = ca.SX.sym('v_2', n)
 
     # velocities and positions
     v[0, 0] = -1 * sin(q[0]) * l[0] * qdot[0]
     v[0, 1] = cos(q[0]) * l[0] * qdot[0]
-    x[0, 0] = cos(q[0]) * l[0]
-    x[0, 1] = sin(q[0]) * l[0]
+    fk[0, 0] = cos(q[0]) * l[0]
+    fk[0, 1] = sin(q[0]) * l[0]
 
     for i in range(1, n):
         angle = 0.0
@@ -37,8 +37,8 @@ def createDynamics(n):
             angle += q[j]
         v[i, 0] = v[i-1, 0] - sin(angle) * l[i] * qdot[i]
         v[i, 1] = v[i-1, 1] + cos(angle) * l[i] * qdot[i]
-        x[i, 0] = x[i-1, 0] + cos(angle) * l[i]
-        x[i, 1] = x[i-1, 1] + sin(angle) * l[i]
+        fk[i, 0] = fk[i-1, 0] + cos(angle) * l[i]
+        fk[i, 1] = fk[i-1, 1] + sin(angle) * l[i]
 
     for i in range(n):
         v_2[i] = ca.norm_2(v[i, :]) ** 2
@@ -49,7 +49,7 @@ def createDynamics(n):
     T = sum([0.5 * m[i] * v_2[i] for i in range(n)])
 
     # potential energy
-    V = sum([g * m[i] * x[i, 1] for i in range(n)])
+    V = sum([g * m[i] * fk[i, 1] for i in range(n)])
 
     # lagrangian
     L = T - V
@@ -80,7 +80,8 @@ def createDynamics(n):
 
     # save system
     dynamics = ca.Function("dynamics", [q, qdot, l, m, g, k, tau], [xdot])
-    return dynamics
+    fk = ca.Function("fk", [q, l], [fk])
+    return dynamics, fk
 
 if __name__ == "__main__":
     main()
