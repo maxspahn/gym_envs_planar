@@ -1,12 +1,12 @@
 import gym
-import mobileBase
+import mobileRobot
 import time
 import numpy as np
 
 
 def main():
-    env = gym.make('mobile-base-acc-v0', dt=0.01)
-    defaultAction = [0.1]
+    env = gym.make('mobile-robot-acc-v0', n=5, dt=0.01)
+    defaultAction = [1.0, 0.0, 0.1, 0.2, 0.0, 0.0]
     n_episodes = 1
     n_steps = 1000
     cumReward = 0.0
