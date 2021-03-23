@@ -25,7 +25,7 @@ class NLinkTorReacherEnv(core.Env):
         self._n = n
         self._k = k
         self.viewer = None
-        self.dynamics_fun, _ = createDynamics(n)
+        self.dynamics_fun, _, _ = createDynamics(n)
         limUpPos = [self.MAX_POS for i in range(n)]
         limUpVel = [self.MAX_VEL for i in range(n)]
         limUpAcc = [self.MAX_ACC for i in range(n)]
