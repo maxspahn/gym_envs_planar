@@ -23,7 +23,7 @@ class NLinkAccReacherEnv(core.Env):
         limUpPos = [self.MAX_POS for i in range(n)]
         limUpVel = [self.MAX_VEL for i in range(n)]
         limUpAcc = [self.MAX_ACC for i in range(n)]
-        high = np.array( limUpPos + limUpVel + limUpAcc, dtype=np.float32)
+        high = np.array(limUpPos + limUpVel,  dtype=np.float32)
         low = -high
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float64)
         self.action_space = spaces.Box(
@@ -47,8 +47,7 @@ class NLinkAccReacherEnv(core.Env):
         s = self.state
         self.action = a
         ns = self.integrate()
-        acc = self.continuous_dynamics(self.state[0:self._n * 2], 0.1)
-        self.state = np.concatenate((ns, acc[0:self._n]))
+        self.state = ns
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
         return (self._get_ob(), reward, terminal, {})
