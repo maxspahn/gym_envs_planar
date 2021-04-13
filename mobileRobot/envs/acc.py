@@ -23,7 +23,7 @@ class MobileRobotAccEnv(core.Env):
 
     def __init__(self, n=2, dt=0.01):
         self.viewer = None
-        self._n = n
+        self._n = n 
         limUpBasePos = [self.MAX_POS_BASE]
         limUpBaseVel = [self.MAX_VEL_BASE]
         limUpBaseAcc = [self.MAX_ACC_BASE]
@@ -47,7 +47,7 @@ class MobileRobotAccEnv(core.Env):
 
     def reset(self):
         pos = [0.1 for i in range(self._n)]
-        vel = [0.1 for i in range(self._n)]
+        vel = [0.0 for i in range(self._n)]
         basePos = [0.0]
         baseVel = [0.0]
         self.state = np.array(basePos + pos + baseVel + vel)
@@ -82,16 +82,18 @@ class MobileRobotAccEnv(core.Env):
         ynext = odeint(self.continuous_dynamics, x0, t)
         return ynext[1]
 
-    def forwardKinematics(self, lastLinkIndex):
-        fk = np.array([self.state[0], 1.2, 0.0])
-        for i in range(lastLinkIndex):
-            angle = 0.0
-            for j in range(i+1):
-                angle += self.state[j+1]
-            fk[0] += np.cos(angle) * self.LINK_LENGTH
-            fk[1] += np.sin(angle) * self.LINK_LENGTH
-            fk[2] += self.state[i+1]
-        fk[2] += self.state[lastLinkIndex+1]
+    def forwardKinematics(self, x_base, lastLinkIndex):
+        q = self.state[0:self._n + 1]
+        fk = np.zeros(3)
+        if lastLinkIndex >= 1:
+            fk[0] += x_base[0]
+            fk[1] += x_base[1]
+            fk[2] += q[1]
+        for i in range(1, lastLinkIndex):
+            fk[0] += np.cos(fk[2]) * self.LINK_LENGTH
+            fk[1] += np.sin(fk[2]) * self.LINK_LENGTH
+            if i < (self._n):
+                fk[2] += q[i+1]
         return fk
 
     def render(self, mode="human"):
@@ -129,8 +131,9 @@ class MobileRobotAccEnv(core.Env):
         baseJoint.add_attr(tf0)
         base.add_attr(tf0)
         l,r,t,b = 0, self.LINK_LENGTH, .01, -.01
+        x_base = np.array([self.state[0], 1.2])
         for i in range(self._n):
-            fk = self.forwardKinematics(i)
+            fk = self.forwardKinematics(x_base, i+1)
             tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
             link = self.viewer.draw_polygon([(l,b), (l,t), (r,t), (r,b)])
             link.set_color(0,.8, .8)
@@ -138,7 +141,7 @@ class MobileRobotAccEnv(core.Env):
             joint = self.viewer.draw_circle(.10)
             joint.set_color(.8, .8, 0)
             joint.add_attr(tf)
-        fk = self.forwardKinematics(self._n)
+        fk = self.forwardKinematics(x_base, self._n+1)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self.viewer.draw_circle(.10)
         eejoint.set_color(.8, .8, 0)

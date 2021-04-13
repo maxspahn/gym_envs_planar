@@ -5,10 +5,12 @@ import numpy as np
 
 
 def main():
-    env = gym.make('mobile-robot-acc-v0', n=5, dt=0.01)
-    defaultAction = [1.0, 0.0, 0.1, 0.2, 0.0, 0.0]
+    n = 5
+    env = gym.make('mobile-robot-acc-v0', n=n, dt=0.01)
+    defaultAction = np.zeros(n+1)
+    defaultAction[3] = 1.0
     n_episodes = 1
-    n_steps = 1000
+    n_steps = 400
     cumReward = 0.0
     for e in range(n_episodes):
         ob = env.reset()
