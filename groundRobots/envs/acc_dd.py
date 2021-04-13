@@ -16,8 +16,8 @@ class GroundRobotDiffDriveAccEnv(core.Env):
     BASE_WHEEL_DIST = 0.6 # [m]
     LINK_MASS_BASE = 5.0  #: [kg] mass of link 1
 
-    MAX_POS_BASE_X = 5
-    MAX_POS_BASE_Y = 5
+    MAX_POS_BASE_X = 20
+    MAX_POS_BASE_Y = 20
     MAX_POS_BASE_THETA = np.pi
     MAX_VEL_BASE_X = 5
     MAX_VEL_BASE_Y = 5
@@ -107,7 +107,7 @@ class GroundRobotDiffDriveAccEnv(core.Env):
         bound_x = self.MAX_POS_BASE_X + 1.0
         bound_y = self.MAX_POS_BASE_Y + 1.0
         if self.viewer is None:
-            self.viewer = rendering.Viewer(500, 500)
+            self.viewer = rendering.Viewer(1000, 1000)
             self.viewer.set_bounds(-bound_x, bound_x, -bound_y, bound_y)
         self.viewer.draw_line((-bound_x, 0.0), (bound_x, 0.0))
         self.viewer.draw_line((0.0, -bound_y), (0.0, bound_y))
