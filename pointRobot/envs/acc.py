@@ -81,7 +81,11 @@ class PointRobotAccEnv(core.Env):
 
         self.viewer.draw_line((-bound, 0), (bound, 0))
         self.viewer.draw_line((0, -bound), (0, bound))
-        tf0 = rendering.Transform(rotation=0, translation=(s[0], s[1]))
+        x = s[0]
+        y = 0.0
+        if self._n == 2:
+            y = s[1]
+        tf0 = rendering.Transform(rotation=0, translation=(x, y))
         joint = self.viewer.draw_circle(.10)
         joint.set_color(.8, .8, 0)
         joint.add_attr(tf0)
