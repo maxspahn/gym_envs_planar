@@ -16,8 +16,8 @@ class GroundRobotDiffDriveAccEnv(core.Env):
     BASE_WHEEL_DIST = 0.6 # [m]
     LINK_MASS_BASE = 5.0  #: [kg] mass of link 1
 
-    MAX_POS_BASE_X = 20
-    MAX_POS_BASE_Y = 20
+    MAX_POS_BASE_X = 10
+    MAX_POS_BASE_Y = 10
     MAX_POS_BASE_THETA = np.pi
     MAX_VEL_BASE_X = 5
     MAX_VEL_BASE_Y = 5
@@ -60,8 +60,11 @@ class GroundRobotDiffDriveAccEnv(core.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def reset(self):
-        self.state = np.zeros(shape=(8))
+    def reset(self, initPos, initForwardVel):
+        initVel = np.array([np.cos(initPos[2]) * initForwardVel[0],
+                            np.sin(initPos[2]) * initForwardVel[0],
+                            initForwardVel[1]])
+        self.state = np.concatenate((initPos, initVel, initForwardVel))
         return self._get_ob()
 
     def step(self, a):
@@ -82,6 +85,8 @@ class GroundRobotDiffDriveAccEnv(core.Env):
     def continuous_dynamics(self, x, t):
         a_forward = self.action[0]
         a_rotation = self.action[1]
+        x = self.state[0]
+        y = self.state[1]
         theta = self.state[2]
         xdot = self.state[3]
         ydot = self.state[4]

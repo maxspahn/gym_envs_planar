@@ -71,7 +71,20 @@ class GroundRobotAccEnv(core.Env):
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):
-        return self.state
+        """ returns wheel positions and velocities"""
+        x_center = self.state[0]
+        y_center = self.state[1]
+        theta = self.state[2]
+        x_r = x_center + np.sin(theta) * self.BASE_WHEEL_DIST/2.0
+        x_l = x_center - np.sin(theta) * self.BASE_WHEEL_DIST/2.0
+        y_r = x_center + np.cos(theta) * self.BASE_WHEEL_DIST/2.0
+        y_l = x_center - np.cos(theta) * self.BASE_WHEEL_DIST/2.0
+        xdot_r = self.state[3]
+        ydot_r = self.state[4]
+        xdot_l = self.state[3]
+        ydot_l = self.state[4]
+        thetadot = self.state[5]
+        return np.array([x_r, y_r, x_l, y_l, theta, xdot_r, ydot_r, xdot_l, ydot_l, thetadot])
 
     def _terminal(self):
         return False
@@ -86,8 +99,8 @@ class GroundRobotAccEnv(core.Env):
         vr = self.state[6]
         vl = self.state[7]
         xddot = 0.5 * (ar + al) * np.cos(theta) - 0.5 * (vr + vl) * np.sin(theta) * thetadot
-        yddot = 0.5 * (ar + al) * np.sin(theta) + 0.5 * (vl + vl) * np.cos(theta) * thetadot
-        thetaddot = 0.5 * (ar - al) * self.BASE_WHEEL_DIST
+        yddot = 0.5 * (ar + al) * np.sin(theta) + 0.5 * (vr + vl) * np.cos(theta) * thetadot
+        thetaddot = 2.0 * (ar - al) * self.BASE_WHEEL_DIST
         return np.array([xdot, ydot, thetadot, xddot, yddot, thetaddot, ar, al])
 
     def integrate(self):
@@ -120,6 +133,7 @@ class GroundRobotAccEnv(core.Env):
         l, r, t, b = -0.5*self.BASE_LENGTH, 0.5 * self.BASE_LENGTH, 0.5 * self.BASE_WIDTH, -0.5 * self.BASE_WIDTH
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         yw = self.BASE_WHEEL_DIST/2.0
+        """
         wheelfl = self.viewer.draw_polygon([(0.2, yw), (0.2, yw+0.1), (0.4, yw+0.1), (0.4, yw)])
         wheelfr = self.viewer.draw_polygon([(0.2, -yw), (0.2, -yw-0.1), (0.4, -yw-0.1), (0.4, -yw)])
         wheelbl = self.viewer.draw_polygon([(-0.2, yw), (-0.2, yw+0.1), (-0.4, yw+0.1), (-0.4, yw)])
@@ -128,6 +142,13 @@ class GroundRobotAccEnv(core.Env):
         wheelfr.add_attr(tf)
         wheelbl.add_attr(tf)
         wheelbr.add_attr(tf)
+        """
+        center = self.viewer.draw_polygon([(-0.1, -0.1), (-0.1, 0.1), (0.1, 0.1), (0.1, -0.1)])
+        wheell = self.viewer.draw_polygon([(-0.3, yw), (-0.3, yw+0.2), (0.3, yw+0.2), (0.3, yw)])
+        wheelr = self.viewer.draw_polygon([(-0.3, -yw), (-0.3, -yw-0.2), (0.3, -yw-0.2), (0.3, -yw)])
+        center.add_attr(tf)
+        wheell.add_attr(tf)
+        wheelr.add_attr(tf)
         link.set_color(0, 0.8, 0.8)
         link.add_attr(tf)
 

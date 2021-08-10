@@ -7,25 +7,23 @@ from gym import core, spaces
 from gym.utils import seeding
 
 
-class PointRobotAccEnv(core.Env):
+class PointRobotVelEnv(core.Env):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
 
     MAX_VEL = 10
     MAX_POS = 10
-    MAX_ACC = 10
 
     def __init__(self, n=2, dt=0.01):
         self._n = n
         self.viewer = None
         limUpPos = [self.MAX_POS for i in range(n)]
         limUpVel = [self.MAX_VEL for i in range(n)]
-        limUpAcc = [self.MAX_ACC for i in range(n)]
-        high = np.array(limUpPos + limUpVel,  dtype=np.float32)
+        high = np.array(limUpPos,  dtype=np.float32)
         low = -high
         self.observation_space = spaces.Box(low=low, high=high, dtype=np.float64)
         self.action_space = spaces.Box(
-            low=-np.array(limUpAcc), high=np.array(limUpAcc), dtype=np.float64
+            low=-np.array(limUpVel), high=np.array(limUpVel), dtype=np.float64
         )
         self.state = None
         self.seed()
@@ -43,7 +41,7 @@ class PointRobotAccEnv(core.Env):
         s = self.state
         self.action = a
         ns = self.integrate()
-        self.state = ns
+        self.state = np.concatenate((ns, a))
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
         return (self._get_ob(), reward, terminal, {})
@@ -56,16 +54,14 @@ class PointRobotAccEnv(core.Env):
         return False
 
     def continuous_dynamics(self, x, t):
-        u = self.action
-        vel = np.array(x[self._n : self._n * 2])
-        acc = np.concatenate((vel, u))
-        return acc
+        return self.action
 
     def integrate(self):
-        x0 = self.state[0:2 * self._n]
+        x0 = self.state[0:self._n]
         t = np.arange(0, 2 * self._dt, self._dt)
         acc = self.continuous_dynamics(x0, t)
         ynext = x0 + self._dt * acc
+        #ynext = odeint(self.continuous_dynamics, x0, t)[1]
         return ynext
 
     def render(self, mode="human"):

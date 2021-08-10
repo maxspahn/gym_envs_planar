@@ -45,12 +45,15 @@ class MobileRobotAccEnv(core.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def reset(self):
-        pos = [0.1 for i in range(self._n)]
-        vel = [0.0 for i in range(self._n)]
-        basePos = [0.0]
-        baseVel = [0.0]
-        self.state = np.array(basePos + pos + baseVel + vel)
+    def reset(self, pos=None, vel=None):
+        try:
+            if pos==None:
+                pos=np.concatenate((np.zeros(1), np.ones(self._n) * 0.1))
+            if vel==None:
+                vel=np.concatenate((np.zeros(1), np.ones(self._n) * 0.1))
+        except:
+            print("Using initial data")
+        self.state = np.concatenate((pos, vel))
         return self._get_ob()
 
     def step(self, a):
