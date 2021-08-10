@@ -15,3 +15,7 @@ register(
     id='ground-robot-diffdrive-acc-v0',
     entry_point='groundRobots.envs:GroundRobotDiffDriveAccEnv'
 )
+register(
+    id='ground-robot-diffdrive-arm-acc-v0',
+    entry_point='groundRobots.envs:GroundRobotArmDiffDriveAccEnv'
+)
