@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import sin, cos, pi
+import time
 
 from scipy.integrate import odeint
 
@@ -28,6 +29,9 @@ class PointRobotVelEnv(core.Env):
         self.state = None
         self.seed()
         self._dt = dt
+
+    def dt(self):
+        return self._dt
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -86,7 +90,7 @@ class PointRobotVelEnv(core.Env):
         joint = self.viewer.draw_circle(.10)
         joint.set_color(.8, .8, 0)
         joint.add_attr(tf0)
-
+        time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
 

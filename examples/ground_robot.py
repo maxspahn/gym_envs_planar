@@ -1,6 +1,5 @@
 import gym
 import groundRobots
-import time
 import numpy as np
 
 
@@ -15,7 +14,6 @@ def main():
         ob = env.reset(np.array([0.0, 1.0, 0.0]))
         print("Starting episode")
         for i in range(n_steps):
-            #time.sleep(env._dt)
             # action = env.action_space.sample()
             action = defaultAction
             env.render()

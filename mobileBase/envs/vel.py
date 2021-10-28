@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import sin, cos, pi
+import time
 
 from scipy.integrate import odeint
 
@@ -38,6 +39,9 @@ class MobileBaseVelEnv(core.Env):
         self._dt = dt
         self.seed()
 
+
+    def dt(self):
+        return self._dt
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -101,6 +105,7 @@ class MobileBaseVelEnv(core.Env):
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
         link.add_attr(tf[0])
+        time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
