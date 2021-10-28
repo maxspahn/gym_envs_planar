@@ -151,7 +151,8 @@ class GroundRobotArmDiffDriveAccEnv(core.Env):
 
         # arm
         l, r, t, b = 0, self.LINK_LENGTH, .05, -.05
-        tf_arm = rendering.Transform(rotation=theta + s[3], translation=p)
+        p_arm = p + 0.2 * np.array([np.cos(theta), np.sin(theta)])
+        tf_arm = rendering.Transform(rotation=theta + s[3], translation=p_arm)
         link = self.viewer.draw_polygon([(l, b), (l,t), (r,t), (r,b)])
         link.set_color(0, .2, .8)
         link.add_attr(tf_arm)
