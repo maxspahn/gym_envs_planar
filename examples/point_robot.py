@@ -4,7 +4,7 @@ import numpy as np
 
 
 def main():
-    env = gym.make('point-robot-acc-v0', dt=0.01)
+    env = gym.make('point-robot-acc-v0', render=True, dt=0.01)
     defaultAction = [0.0, 0.10]
     initPos = np.array([1.0, 0.0])
     initVel = np.array([-1.0, 0.0])
@@ -17,7 +17,6 @@ def main():
         for i in range(n_steps):
             action = env.action_space.sample()
             action = defaultAction
-            env.render()
             ob, reward, done, info = env.step(action)
             cumReward += reward
             if done:
