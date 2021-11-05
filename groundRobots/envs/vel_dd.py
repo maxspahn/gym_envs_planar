@@ -59,8 +59,15 @@ class GroundRobotDiffDriveVelEnv(core.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def reset(self, initPos):
-        self.state = np.concatenate((initPos, np.zeros(3)))
+    def reset(self, pos=None, vel=None):
+        try:
+            if pos is None:
+                pos = np.ones(3) * 0.0
+            if vel is None:
+                vel = np.ones(2) * 0.0
+        except:
+            print("Using initial data")
+        self.state = np.concatenate((pos, vel))
         return self._get_ob()
 
     def step(self, a):
