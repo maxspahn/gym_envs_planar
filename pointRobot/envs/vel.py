@@ -15,7 +15,7 @@ class PointRobotVelEnv(core.Env):
     MAX_VEL = 10
     MAX_POS = 10
 
-    def __init__(self, n=2, dt=0.01):
+    def __init__(self, n=2, dt=0.01, render=False):
         self._n = n
         self.viewer = None
         limUpPos = [self.MAX_POS for i in range(n)]
@@ -29,6 +29,7 @@ class PointRobotVelEnv(core.Env):
         self.state = None
         self.seed()
         self._dt = dt
+        self._render = render
 
     def dt(self):
         return self._dt
@@ -48,6 +49,8 @@ class PointRobotVelEnv(core.Env):
         self.state = np.concatenate((ns, a))
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
+        if self._render:
+            self.render()
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):
@@ -63,9 +66,8 @@ class PointRobotVelEnv(core.Env):
     def integrate(self):
         x0 = self.state[0:self._n]
         t = np.arange(0, 2 * self._dt, self._dt)
-        acc = self.continuous_dynamics(x0, t)
-        ynext = x0 + self._dt * acc
-        #ynext = odeint(self.continuous_dynamics, x0, t)[1]
+        vel = self.continuous_dynamics(x0, t)
+        ynext = x0 + self._dt * vel
         return ynext
 
     def render(self, mode="human"):
