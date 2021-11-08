@@ -9,18 +9,16 @@ from gym.utils import seeding
 
 
 class MobileBaseAccEnv(core.Env):
-
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
 
-    BASE_HEIGHT = 1.0 # [m]
+    BASE_HEIGHT = 1.0  # [m]
     LINK_MASS_BASE = 500.0  #: [kg] mass of link 1
 
     MAX_VEL_BASE = 1
     MAX_POS_BASE = 5.0
     MAX_ACC_BASE = 1.0
 
-
-    def __init__(self, dt=0.01):
+    def __init__(self, render=False, dt=0.01):
         self.viewer = None
         high = np.array(
             [
@@ -37,7 +35,7 @@ class MobileBaseAccEnv(core.Env):
         self.state = None
         self._dt = dt
         self.seed()
-
+        self._render = render
 
     def dt(self):
         return self._dt
@@ -57,6 +55,8 @@ class MobileBaseAccEnv(core.Env):
         self.state = np.append(ns, a)
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
+        if self._render:
+            self.render()
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):

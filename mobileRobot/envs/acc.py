@@ -22,7 +22,7 @@ class MobileRobotAccEnv(core.Env):
     MAX_VEL = 4 * pi
     MAX_ACC = 4 * pi
 
-    def __init__(self, n=2, dt=0.01):
+    def __init__(self, render=False, n=2, dt=0.01):
         self.viewer = None
         self._n = n 
         limUpBasePos = [self.MAX_POS_BASE]
@@ -40,6 +40,7 @@ class MobileRobotAccEnv(core.Env):
         self.state = None
         self._dt = dt
         self.seed()
+        self._render = render
 
 
     def dt(self):
@@ -67,6 +68,8 @@ class MobileRobotAccEnv(core.Env):
         self.state = np.concatenate((ns, a))
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
+        if self._render:
+            self.render()
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):

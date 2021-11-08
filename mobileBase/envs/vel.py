@@ -21,7 +21,7 @@ class MobileBaseVelEnv(core.Env):
     actionlimits = [np.array([-MAX_VEL_BASE]), np.array([MAX_VEL_BASE])]
 
 
-    def __init__(self, dt=0.01):
+    def __init__(self, render=False, dt=0.01):
         self.viewer = None
         high = np.array(
             [
@@ -38,6 +38,7 @@ class MobileBaseVelEnv(core.Env):
         self.state = None
         self._dt = dt
         self.seed()
+        self._render = render
 
 
     def dt(self):
@@ -58,6 +59,8 @@ class MobileBaseVelEnv(core.Env):
         self.state = np.append(ns, a)
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
+        if self._render:
+            self.render()
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):
