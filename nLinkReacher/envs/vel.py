@@ -17,7 +17,7 @@ class NLinkVelReacherEnv(core.Env):
     MAX_VEL = 4 * pi
     MAX_POS = pi
 
-    def __init__(self, n=2, dt=0.01):
+    def __init__(self, render=False, n=2, dt=0.01):
         self._n = n
         self.viewer = None
         limUpPos = [self.MAX_POS for i in range(n)]
@@ -31,6 +31,7 @@ class NLinkVelReacherEnv(core.Env):
         self.state = None
         self.seed()
         self._dt = dt
+        self._render = render
 
     def dt(self):
         return self._dt
@@ -58,6 +59,8 @@ class NLinkVelReacherEnv(core.Env):
         self.state = np.concatenate((ns, vel))
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
+        if self._render:
+            self.render()
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):

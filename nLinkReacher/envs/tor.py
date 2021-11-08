@@ -22,7 +22,7 @@ class NLinkTorReacherEnv(core.Env):
     MAX_ACC = 9 * pi
     MAX_TOR = 1000
 
-    def __init__(self, n=2, dt=0.01, k=0.0):
+    def __init__(self, render=False, n=2, dt=0.01, k=0.0):
         self._n = n
         self._k = k
         self.viewer = None
@@ -40,6 +40,7 @@ class NLinkTorReacherEnv(core.Env):
         self.state = None
         self.seed()
         self._dt = dt
+        self._render = render
 
     def dt(self):
         return self._dt
@@ -63,6 +64,9 @@ class NLinkTorReacherEnv(core.Env):
         self.state = np.concatenate((ns, acc[0:self._n]))
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
+        if self._render:
+            self.render()
+
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):
