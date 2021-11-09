@@ -9,14 +9,16 @@ from gym.utils import seeding
 
 
 class MobileBaseAccEnv(core.Env):
+
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
 
-    BASE_HEIGHT = 1.0  # [m]
+    BASE_HEIGHT = 1.0 # [m]
     LINK_MASS_BASE = 500.0  #: [kg] mass of link 1
 
     MAX_VEL_BASE = 1
     MAX_POS_BASE = 5.0
     MAX_ACC_BASE = 1.0
+
 
     def __init__(self, render=False, dt=0.01):
         self.viewer = None

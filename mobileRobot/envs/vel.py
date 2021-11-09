@@ -9,9 +9,10 @@ from gym.utils import seeding
 
 
 class MobileRobotVelEnv(core.Env):
+
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
 
-    BASE_HEIGHT = 1.0  # [m]
+    BASE_HEIGHT = 1.0 # [m]
     LINK_LENGTH = 1.0  # [m]
 
     MAX_VEL_BASE = 1
@@ -84,12 +85,12 @@ class MobileRobotVelEnv(core.Env):
         fk = np.array([self.state[0], 1.2, 0.0])
         for i in range(lastLinkIndex):
             angle = 0.0
-            for j in range(i + 1):
-                angle += self.state[j + 1]
+            for j in range(i+1):
+                angle += self.state[j+1]
             fk[0] += np.cos(angle) * self.LINK_LENGTH
             fk[1] += np.sin(angle) * self.LINK_LENGTH
-            fk[2] += self.state[i + 1]
-        fk[2] += self.state[lastLinkIndex + 1]
+            fk[2] += self.state[i+1]
+        fk[2] += self.state[lastLinkIndex+1]
         return fk
 
     def render(self, mode="human"):
@@ -120,18 +121,18 @@ class MobileRobotVelEnv(core.Env):
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
         link.add_attr(tf[0])
-        base = self.viewer.draw_polygon([(-0.2, -0.2), (0.0, 0.0), (0.0, 0.0), (0.2, -0.2)])
+        base = self.viewer.draw_polygon([(-0.2,-0.2), (0.0,0.0), (0.0,0.0), (0.2,-0.2)])
         baseJoint = self.viewer.draw_circle(.10)
         baseJoint.set_color(.8, .8, 0)
         tf0 = rendering.Transform(rotation=0, translation=(self.state[0], 1.2))
         baseJoint.add_attr(tf0)
         base.add_attr(tf0)
-        l, r, t, b = 0, self.LINK_LENGTH, .01, -.01
+        l,r,t,b = 0, self.LINK_LENGTH, .01, -.01
         for i in range(self._n):
             fk = self.forwardKinematics(i)
             tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
-            link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
-            link.set_color(0, .8, .8)
+            link = self.viewer.draw_polygon([(l,b), (l,t), (r,t), (r,b)])
+            link.set_color(0,.8, .8)
             link.add_attr(tf)
             joint = self.viewer.draw_circle(.10)
             joint.set_color(.8, .8, 0)
