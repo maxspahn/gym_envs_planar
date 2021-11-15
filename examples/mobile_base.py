@@ -4,7 +4,7 @@ import numpy as np
 
 
 def main():
-    env = gym.make('mobile-base-acc-v0', dt=0.01)
+    env = gym.make('mobile-base-acc-v0', render=True, dt=0.01)
     defaultAction = [0.1]
     n_episodes = 1
     n_steps = 1000
@@ -15,7 +15,6 @@ def main():
         for i in range(n_steps):
             action = env.action_space.sample()
             action = defaultAction
-            env.render()
             ob, reward, done, info = env.step(action)
             cumReward += reward
             if done:

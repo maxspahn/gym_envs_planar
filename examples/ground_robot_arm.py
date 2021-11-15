@@ -4,7 +4,7 @@ import numpy as np
 
 
 def main():
-    env = gym.make('ground-robot-diffdrive-arm-acc-v0', dt=0.01)
+    env = gym.make('ground-robot-diffdrive-arm-acc-v0', render=True, dt=0.01)
     defaultAction = np.array([0.05, 0.0, 0.0])
     n_episodes = 1
     n_steps = 1000
@@ -14,7 +14,6 @@ def main():
         print("Starting episode")
         for i in range(n_steps):
             action = defaultAction
-            env.render()
             ob, reward, done, info = env.step(action)
             cumReward += reward
             if done:
