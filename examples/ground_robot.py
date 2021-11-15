@@ -16,7 +16,6 @@ def main():
         for i in range(n_steps):
             # action = env.action_space.sample()
             action = defaultAction
-            #env.render()
             ob, reward, done, info = env.step(action)
             cumReward += reward
             if done:

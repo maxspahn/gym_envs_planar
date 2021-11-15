@@ -14,7 +14,6 @@ def main():
         print("Starting episode")
         for i in range(n_steps):
             action = defaultAction
-            #env.render()
             ob, reward, done, info = env.step(action)
             cumReward += reward
             if done:
