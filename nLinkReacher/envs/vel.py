@@ -15,5 +15,6 @@ class NLinkVelReacherEnv(NLinkReacherEnv):
     def continuous_dynamics(self, x, t):
         vel = self.action
         acc = np.zeros(self._n)
+        self.state[self._n: 2 * self._n] = vel
         xdot = np.concatenate((vel, acc))
         return xdot

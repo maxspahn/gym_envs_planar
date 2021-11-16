@@ -55,6 +55,7 @@ class NLinkReacherEnv(core.Env):
 
     def step(self, a):
         self.action = a
+        _ = self.continuous_dynamics(self.state, 0)
         ns = self.integrate()
         self.state = ns
         terminal = self._terminal()
