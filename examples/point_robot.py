@@ -13,7 +13,7 @@ def main():
     n_steps = 1000
     cumReward = 0.0
     for e in range(n_episodes):
-        ob = env.reset(initPos, initVel)
+        ob = env.reset(pos=initPos, vel=initVel)
         print("Starting episode")
         t = 0
         for i in range(n_steps):
