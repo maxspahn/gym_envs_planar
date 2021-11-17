@@ -12,7 +12,7 @@ def main():
     n_steps = 1000
     cumReward = 0.0
     for e in range(n_episodes):
-        ob = env.reset()
+        ob = env.reset(pos=np.random.rand(n))
         print("Starting episode")
         for i in range(n_steps):
             action = env.action_space.sample()

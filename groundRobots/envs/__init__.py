@@ -1,5 +1,4 @@
 from groundRobots.envs.vel import GroundRobotVelEnv
 from groundRobots.envs.acc import GroundRobotAccEnv
-from groundRobots.envs.vel_dd import GroundRobotDiffDriveVelEnv
-from groundRobots.envs.acc_dd import GroundRobotDiffDriveAccEnv
-from groundRobots.envs.acc_dd_arm import GroundRobotArmDiffDriveAccEnv
+from groundRobots.envs.acc_arm import GroundRobotArmAccEnv
+from groundRobots.envs.vel_arm import GroundRobotArmVelEnv
