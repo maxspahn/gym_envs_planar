@@ -8,14 +8,10 @@ register(
     entry_point='groundRobots.envs:GroundRobotAccEnv'
 )
 register(
-    id='ground-robot-diffdrive-vel-v0',
-    entry_point='groundRobots.envs:GroundRobotDiffDriveVelEnv'
+    id='ground-robot-arm-acc-v0',
+    entry_point='groundRobots.envs:GroundRobotArmAccEnv'
 )
 register(
-    id='ground-robot-diffdrive-acc-v0',
-    entry_point='groundRobots.envs:GroundRobotDiffDriveAccEnv'
-)
-register(
-    id='ground-robot-diffdrive-arm-acc-v0',
-    entry_point='groundRobots.envs:GroundRobotArmDiffDriveAccEnv'
+    id='ground-robot-arm-vel-v0',
+    entry_point='groundRobots.envs:GroundRobotArmVelEnv'
 )

@@ -6,6 +6,7 @@ setup(
     install_requires=['gym',
                       'numpy',
                       'pyglet',
-                      'scipy', 
-                      'casadi']
+                      'scipy',
+                      'casadi',
+                      'abc']
 )
