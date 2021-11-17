@@ -7,6 +7,5 @@ setup(
                       'numpy',
                       'pyglet',
                       'scipy',
-                      'casadi',
-                      'abc']
+                      'casadi']
 )
