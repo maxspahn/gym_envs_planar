@@ -2,15 +2,11 @@ import numpy as np
 import time
 from abc import abstractmethod
 
-from scipy.integrate import odeint
-
-from gym import core
-from gym.utils import seeding
+from planarCommon.planarEnv import PlanarEnv
 
 
-class MobileRobotEnv(core.Env):
+class MobileRobotEnv(PlanarEnv):
 
-    metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
 
     BASE_HEIGHT = 1.0 # [m]
     LINK_LENGTH = 1.0  # [m]
@@ -44,13 +40,6 @@ class MobileRobotEnv(core.Env):
     def setSpaces(self):
         pass
 
-    def dt(self):
-        return self._dt
-
-    def seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
-
     def reset(self, pos=None, vel=None):
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
             pos = np.zeros(self._n)
@@ -81,12 +70,6 @@ class MobileRobotEnv(core.Env):
     @abstractmethod
     def continuous_dynamics(self, x, t):
         pass
-
-    def integrate(self):
-        x0 = self.state[0 : 2 * self._n]
-        t = np.arange(0, 2 * self._dt, self._dt)
-        ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
 
     def forwardKinematics(self, lastLinkIndex):
         fk = np.array([self.state[0], 1.2, 0.0])
@@ -152,8 +135,3 @@ class MobileRobotEnv(core.Env):
         time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
-
-    def close(self):
-        if self.viewer:
-            self.viewer.close()
-            self.viewer = None

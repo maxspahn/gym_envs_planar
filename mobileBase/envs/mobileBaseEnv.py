@@ -1,17 +1,10 @@
 import numpy as np
 from abc import abstractmethod
-from numpy import sin, cos, pi
 import time
 
-from scipy.integrate import odeint
+from planarCommon.planarEnv import PlanarEnv
 
-from gym import core, spaces
-from gym.utils import seeding
-
-
-class MobileBaseEnv(core.Env):
-
-    metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
+class MobileBaseEnv(PlanarEnv):
 
     BASE_HEIGHT = 1.0 # [m]
     LINK_MASS_BASE = 500.0  #: [kg] mass of link 1
@@ -38,14 +31,6 @@ class MobileBaseEnv(core.Env):
     @abstractmethod
     def setSpaces(self):
         pass
-
-
-    def dt(self):
-        return self._dt
-
-    def seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
 
     def reset(self, pos=None, vel=None):
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
@@ -78,12 +63,6 @@ class MobileBaseEnv(core.Env):
     def continuous_dynamics(self, x, t):
         pass
 
-    def integrate(self):
-        x0 = self.state[0 : 2 * self._n]
-        t = np.arange(0, 2 * self._dt, self._dt)
-        ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
-
     def render(self, mode="human"):
         from gym.envs.classic_control import rendering
 
@@ -115,8 +94,3 @@ class MobileBaseEnv(core.Env):
         time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
-
-    def close(self):
-        if self.viewer:
-            self.viewer.close()
-            self.viewer = None
