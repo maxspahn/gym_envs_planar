@@ -1,14 +1,12 @@
 import numpy as np
 import time
+from scipy.integrate import odeint
 from abc import abstractmethod
 
-from scipy.integrate import odeint
-
-from gym import core
-from gym.utils import seeding
+from planarCommon.planarEnv import PlanarEnv
 
 
-class GroundRobotEnv(core.Env):
+class GroundRobotEnv(PlanarEnv):
 
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
 
@@ -50,13 +48,6 @@ class GroundRobotEnv(core.Env):
     def setSpaces(self):
         pass
 
-    def dt(self):
-        return self._dt
-
-    def seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
-
     def reset(self, pos=None, vel=None):
         """ The velocity is the forward velocity and turning velocity here """
         if not isinstance(pos, np.ndarray) or not pos.size == 3:
@@ -78,6 +69,12 @@ class GroundRobotEnv(core.Env):
             self.render()
         return (self._get_ob(), reward, terminal, {})
 
+    def integrate(self):
+        x0 = self.state
+        t = np.arange(0, 2 * self._dt, self._dt)
+        ynext = odeint(self.continuous_dynamics, x0, t)
+        return ynext[1]
+
     def _get_ob(self):
         return np.concatenate((self.state, self.pos_der))
 
@@ -87,13 +84,6 @@ class GroundRobotEnv(core.Env):
     @abstractmethod
     def continuous_dynamics(self, x, t):
         pass
-
-    @abstractmethod
-    def integrate(self):
-        x0 = self.state
-        t = np.arange(0, 2 * self._dt, self._dt)
-        ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
 
     def render(self, mode="human"):
         from gym.envs.classic_control import rendering
@@ -145,8 +135,3 @@ class GroundRobotEnv(core.Env):
         time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
-
-    def close(self):
-        if self.viewer:
-            self.viewer.close()
-            self.viewer = None

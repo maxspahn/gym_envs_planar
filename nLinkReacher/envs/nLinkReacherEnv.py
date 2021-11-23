@@ -3,15 +3,10 @@ from numpy import sin, cos, pi
 import time
 from abc import abstractmethod
 
-from scipy.integrate import odeint
-
-from gym import core, spaces
-from gym.utils import seeding
+from planarCommon.planarEnv import PlanarEnv
 
 
-class NLinkReacherEnv(core.Env):
-
-    metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
+class NLinkReacherEnv(PlanarEnv):
 
     LINK_LENGTH = 1.0  # [m]
     LINK_MASS = 1.0
@@ -37,13 +32,6 @@ class NLinkReacherEnv(core.Env):
     @abstractmethod
     def setSpaces(self):
         pass
-
-    def dt(self):
-        return self._dt
-
-    def seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
 
     def reset(self, pos=None, vel=None):
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
@@ -73,12 +61,6 @@ class NLinkReacherEnv(core.Env):
     @abstractmethod
     def continuous_dynamics(self, x, t):
         pass
-
-    def integrate(self):
-        x0 = self.state[0 : 2 * self._n]
-        t = np.arange(0, 2 * self._dt, self._dt)
-        ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
 
     def forwardKinematics(self, lastLinkIndex):
         fk = np.array([0.0, 0.2, 0.0])
@@ -129,8 +111,3 @@ class NLinkReacherEnv(core.Env):
         time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
-
-    def close(self):
-        if self.viewer:
-            self.viewer.close()
-            self.viewer = None
