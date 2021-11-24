@@ -7,6 +7,7 @@ from planarCommon.planarEnv import PlanarEnv
 class MobileBaseEnv(PlanarEnv):
 
     BASE_HEIGHT = 1.0 # [m]
+    BASE_WIDTH = 1.0 # [m]
     LINK_MASS_BASE = 500.0  #: [kg] mass of link 1
 
     MAX_VEL = 1
@@ -16,17 +17,13 @@ class MobileBaseEnv(PlanarEnv):
 
 
     def __init__(self, render=False, dt=0.01):
-        self.viewer = None
-        self.state = None
+        super().__init__(render=render, dt=dt)
         self._n = 1
         self._limUpPos = np.ones(self._n) * self.MAX_POS
         self._limUpVel = np.ones(self._n) * self.MAX_VEL
         self._limUpAcc = np.ones(self._n) * self.MAX_ACC
         self._limUpFor = np.ones(self._n) * self.MAX_FOR
         self.setSpaces()
-        self._dt = dt
-        self.seed()
-        self._render = render
 
     @abstractmethod
     def setSpaces(self):
@@ -64,33 +61,20 @@ class MobileBaseEnv(PlanarEnv):
         pass
 
     def render(self, mode="human"):
+        bound = self.MAX_POS + 1.0
+        bounds = [bound, bound]
+        self.renderCommon(bounds)
         from gym.envs.classic_control import rendering
 
-        s = self.state
+        # drawAxis
+        self.viewer.draw_line((-bound-0.5, 0), (bound+0.5, 0))
 
-        if self.viewer is None:
-            self.viewer = rendering.Viewer(500, 500)
-            bound = self.MAX_POS + 1.0
-            self.viewer.set_bounds(-bound, bound, -bound, bound)
-
-        if s is None:
-            return None
-
-        p0 = [s[0], 0.5 * self.BASE_HEIGHT]
-        p1 = [p0[0], p0[1] + 0.5 * self.BASE_HEIGHT]
-
-        p = [p0, p1]
-        thetas = [0.0, 0.0]
-        tf0 = rendering.Transform(rotation=thetas[0], translation=p0)
-        tf1 = rendering.Transform(rotation=thetas[1], translation=p1)
-        tf = [tf0, tf1]
-
-        self.viewer.draw_line((-5.5, 0), (5.5, 0))
-
-        l, r, t, b = -0.5, 0.5, 0.5, -0.5
+        p0 = [self.state[0], 0.5 * self.BASE_HEIGHT]
+        tf = rendering.Transform(rotation=0, translation=p0)
+        l, r, t, b = -0.5 * self.BASE_WIDTH, 0.5 * self.BASE_WIDTH, 0.5 * self.BASE_HEIGHT, -0.5 * self.BASE_HEIGHT
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
-        link.add_attr(tf[0])
+        link.add_attr(tf)
         time.sleep(self.dt())
 
         return self.viewer.render(return_rgb_array=mode == "rgb_array")

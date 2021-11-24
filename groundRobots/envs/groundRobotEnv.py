@@ -8,8 +8,6 @@ from planarCommon.planarEnv import PlanarEnv
 
 class GroundRobotEnv(PlanarEnv):
 
-    metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 15}
-
     BASE_WIDTH = 1.0  # [m]
     BASE_LENGTH = 1.3  # [m]
     BASE_WHEEL_DIST = 0.6  # [m]
@@ -25,7 +23,7 @@ class GroundRobotEnv(PlanarEnv):
     MAX_ACC_FORWARD = 100
 
     def __init__(self, render=False, dt=0.01):
-        self.viewer = None
+        super().__init__(render=render, dt=dt)
         self._limUpPos = np.array(
             [self.MAX_POS_BASE, self.MAX_POS_BASE, self.MAX_POS_BASE_THETA]
         )
@@ -38,11 +36,7 @@ class GroundRobotEnv(PlanarEnv):
         )
         self._limUpRelAcc = np.array([self.MAX_ACC_FORWARD, self.MAX_ACC_BASE_THETA])
         self.setSpaces()
-        self.state = np.zeros(5)
         self.pos_der = np.zeros(3)
-        self._dt = dt
-        self.seed()
-        self._render = render
 
     @abstractmethod
     def setSpaces(self):
@@ -85,25 +79,20 @@ class GroundRobotEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def render(self, mode="human"):
-        from gym.envs.classic_control import rendering
-
-        s = self.state
-
+    def render(self, mode="human", final=True):
         bound_x = self.MAX_POS_BASE + 1.0
         bound_y = self.MAX_POS_BASE + 1.0
-        if self.viewer is None:
-            self.viewer = rendering.Viewer(500, 500)
-            self.viewer.set_bounds(-bound_x, bound_x, -bound_y, bound_y)
+        bounds = [bound_x, bound_y]
+        self.renderCommon(bounds)
+        from gym.envs.classic_control import rendering
+
+        # drawAxis
         self.viewer.draw_line((-bound_x, 0.0), (bound_x, 0.0))
         self.viewer.draw_line((0.0, -bound_y), (0.0, bound_y))
 
-        if s is None:
-            return None
+        p = [self.state[0], self.state[1]]
 
-        p = [s[0], s[1]]
-
-        theta = s[2]
+        theta = self.state[2]
         tf = rendering.Transform(rotation=theta, translation=p)
 
         l, r, t, b = (
@@ -132,6 +121,7 @@ class GroundRobotEnv(PlanarEnv):
         wheelbr.add_attr(tf)
         link.set_color(0, 0.8, 0.8)
         link.add_attr(tf)
-        time.sleep(self.dt())
 
-        return self.viewer.render(return_rgb_array=mode == "rgb_array")
+        if final:
+            time.sleep(self.dt())
+            return self.viewer.render(return_rgb_array=mode == "rgb_array")

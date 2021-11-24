@@ -17,17 +17,13 @@ class NLinkReacherEnv(PlanarEnv):
     MAX_TOR = 1000
 
     def __init__(self, render=False, n=2, dt=0.01):
+        super().__init__(render=render, dt=dt)
         self._n = n
-        self.viewer = None
-        self.state = None
         self._limUpPos = np.ones(self._n) * self.MAX_POS
         self._limUpVel = np.ones(self._n) * self.MAX_VEL
         self._limUpAcc = np.ones(self._n) * self.MAX_ACC
         self._limUpTor = np.ones(self._n) * self.MAX_TOR
         self.setSpaces()
-        self.seed()
-        self._dt = dt
-        self._render = render
 
     @abstractmethod
     def setSpaces(self):
@@ -75,39 +71,45 @@ class NLinkReacherEnv(PlanarEnv):
         return fk
 
     def render(self, mode="human"):
-        from gym.envs.classic_control import rendering
-
-        s = self.state
-
         bound = self.LINK_LENGTH * self._n + 0.2
-        if self.viewer is None:
-            self.viewer = rendering.Viewer(500, 500)
-            self.viewer.set_bounds(-bound, bound, -bound, bound)
+        bounds = [bound, bound]
+        self.renderCommon(bounds)
 
-        if s is None:
-            return None
-
+        # axis
         self.viewer.draw_line((-bound, 0), (bound, 0))
+        self.renderBase()
+        for i in range(self._n):
+            self.renderLink(i)
+        self.renderEndEffector()
+        time.sleep(self.dt())
+        return self.viewer.render(return_rgb_array=mode == "rgb_array")
+
+    def renderBase(self):
+        from gym.envs.classic_control import rendering
         base = self.viewer.draw_polygon([(-0.2, 0), (0.0, 0.2), (0.2, 0), (-0.2, 0)])
         baseJoint = self.viewer.draw_circle(0.10)
         baseJoint.set_color(0.8, 0.8, 0)
         tf0 = rendering.Transform(rotation=0, translation=(0.0, 0.2))
         baseJoint.add_attr(tf0)
+
+    def renderLink(self, i):
+        from gym.envs.classic_control import rendering
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
-        for i in range(self._n):
-            fk = self.forwardKinematics(i)
-            tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
-            link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
-            link.set_color(0, 0.8, 0.8)
-            link.add_attr(tf)
-            joint = self.viewer.draw_circle(0.10)
-            joint.set_color(0.8, 0.8, 0)
-            joint.add_attr(tf)
+        fk = self.forwardKinematics(i)
+        tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
+        link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
+        link.set_color(0, 0.8, 0.8)
+        link.add_attr(tf)
+        joint = self.viewer.draw_circle(0.10)
+        joint.set_color(0.8, 0.8, 0)
+        joint.add_attr(tf)
+
+    def renderEndEffector(self):
+        from gym.envs.classic_control import rendering
         fk = self.forwardKinematics(self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self.viewer.draw_circle(0.10)
         eejoint.set_color(0.8, 0.8, 0)
         eejoint.add_attr(tf)
-        time.sleep(self.dt())
 
-        return self.viewer.render(return_rgb_array=mode == "rgb_array")
+
