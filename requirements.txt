@@ -1,0 +1,5 @@
+gym
+pyglet
+scipy
+casadi
+numpy

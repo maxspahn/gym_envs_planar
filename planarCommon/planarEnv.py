@@ -13,10 +13,10 @@ class PlanarEnv(core.Env):
     def __init__(self, render=False, dt=0.01):
         self.viewer = None
         self.state = None
-        self.setSpaces()
         self.seed()
         self._dt = dt
         self._render = render
+        self._obsts = []
 
     @abstractmethod
     def setSpaces(self):
@@ -28,6 +28,9 @@ class PlanarEnv(core.Env):
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
+
+    def addObstacle(self, obst):
+        self._obsts.append(obst)
 
     @abstractmethod
     def reset(self, pos=None, vel=None):
@@ -58,6 +61,16 @@ class PlanarEnv(core.Env):
     @abstractmethod
     def render(self, mode="human"):
         pass
+
+    def renderCommon(self, bounds):
+        from gym.envs.classic_control import rendering
+        if self.state is None:
+            return None
+        if self.viewer is None:
+            self.viewer = rendering.Viewer(500, 500)
+            self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
+        for obst in self._obsts:
+            obst.renderGym(self.viewer)
 
     def close(self):
         if self.viewer:

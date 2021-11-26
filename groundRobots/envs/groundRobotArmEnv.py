@@ -28,55 +28,13 @@ class GroundRobotArmEnv(GroundRobotEnv):
 
     def render(self, mode="human"):
         from gym.envs.classic_control import rendering
-
-        s = self.state
-
-        bound_x = self.MAX_POS_BASE + 1.0
-        bound_y = self.MAX_POS_BASE + 1.0
-        if self.viewer is None:
-            self.viewer = rendering.Viewer(500, 500)
-            self.viewer.set_bounds(-bound_x, bound_x, -bound_y, bound_y)
-        self.viewer.draw_line((-bound_x, 0.0), (bound_x, 0.0))
-        self.viewer.draw_line((0.0, -bound_y), (0.0, bound_y))
-
-        if s is None:
-            return None
-
-        p = [s[0], s[1]]
-
-        theta = s[2]
-        tf = rendering.Transform(rotation=theta, translation=p)
-
-        l, r, t, b = (
-            -0.5 * self.BASE_LENGTH,
-            0.5 * self.BASE_LENGTH,
-            0.5 * self.BASE_WIDTH,
-            -0.5 * self.BASE_WIDTH,
-        )
-        link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
-        yw = self.BASE_WHEEL_DIST / 2.0
-        wheelfl = self.viewer.draw_polygon(
-            [(0.2, yw), (0.2, yw + 0.1), (0.4, yw + 0.1), (0.4, yw)]
-        )
-        wheelfr = self.viewer.draw_polygon(
-            [(0.2, -yw), (0.2, -yw - 0.1), (0.4, -yw - 0.1), (0.4, -yw)]
-        )
-        wheelbl = self.viewer.draw_polygon(
-            [(-0.2, yw), (-0.2, yw + 0.1), (-0.4, yw + 0.1), (-0.4, yw)]
-        )
-        wheelbr = self.viewer.draw_polygon(
-            [(-0.2, -yw), (-0.2, -yw - 0.1), (-0.4, -yw - 0.1), (-0.4, -yw)]
-        )
-        wheelfl.add_attr(tf)
-        wheelfr.add_attr(tf)
-        wheelbl.add_attr(tf)
-        wheelbr.add_attr(tf)
-        link.set_color(0, 0.8, 0.8)
-        link.add_attr(tf)
+        super().render(mode=mode, final=False)
 
         # arm
         q = self.state[3]
         l, r, t, b = 0, self.LINK_LENGTH, 0.05, -0.05
+        p = [self.state[0], self.state[1]]
+        theta = self.state[2]
         p_arm = p + 0.2 * np.array([np.cos(theta), np.sin(theta)])
         tf_arm = rendering.Transform(rotation=theta + q, translation=p_arm)
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
