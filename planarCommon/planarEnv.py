@@ -17,6 +17,7 @@ class PlanarEnv(core.Env):
         self._dt = dt
         self._render = render
         self._obsts = []
+        self._goals = []
 
     @abstractmethod
     def setSpaces(self):
@@ -31,6 +32,9 @@ class PlanarEnv(core.Env):
 
     def addObstacle(self, obst):
         self._obsts.append(obst)
+
+    def addGoal(self, goal):
+        self._goals.append(goal)
 
     def resetCommon(self):
         self._obsts = []
@@ -79,6 +83,8 @@ class PlanarEnv(core.Env):
             self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
         for obst in self._obsts:
             obst.renderGym(self.viewer)
+        for goal in self._goals:
+            goal.renderGym(self.viewer)
 
     def close(self):
         if self.viewer:
