@@ -38,6 +38,7 @@ class PlanarEnv(core.Env):
 
     def resetCommon(self):
         self._obsts = []
+        self._goals = []
 
     def reset(self, pos=None, vel=None):
         self.resetCommon()
