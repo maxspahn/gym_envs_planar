@@ -3,3 +3,4 @@ pyglet
 scipy
 casadi
 numpy
+-e git+https://github.com/maxspahn/forwardKinematics@main#egg=forwardKinematics
