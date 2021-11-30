@@ -43,6 +43,7 @@ class GroundRobotEnv(PlanarEnv):
         pass
 
     def reset(self, pos=None, vel=None):
+        self.resetCommon()
         """ The velocity is the forward velocity and turning velocity here """
         if not isinstance(pos, np.ndarray) or not pos.size == 3:
             pos = np.zeros(3)

@@ -32,9 +32,17 @@ class PlanarEnv(core.Env):
     def addObstacle(self, obst):
         self._obsts.append(obst)
 
-    @abstractmethod
+    def resetCommon(self):
+        self._obsts = []
+
     def reset(self, pos=None, vel=None):
-        pass
+        self.resetCommon()
+        if not isinstance(pos, np.ndarray) or not pos.size == self._n:
+            pos = np.zeros(self._n)
+        if not isinstance(vel, np.ndarray) or not vel.size == self._n:
+            vel = np.zeros(self._n)
+        self.state = np.concatenate((pos, vel))
+        return self._get_ob()
 
     @abstractmethod
     def step(self, a):

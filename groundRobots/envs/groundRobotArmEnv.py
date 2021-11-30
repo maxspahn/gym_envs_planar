@@ -18,6 +18,7 @@ class GroundRobotArmEnv(GroundRobotEnv):
         super().__init__(render=render, dt=dt)
 
     def reset(self, pos=None, vel=None):
+        self.resetCommon()
         """ The velocity is the forward velocity and turning velocity here """
         if not isinstance(pos, np.ndarray) or not pos.size == 3 + self._n_arm:
             pos = np.zeros(3 + self._n_arm)
