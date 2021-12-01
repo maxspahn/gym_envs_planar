@@ -4,6 +4,7 @@ import time
 from abc import abstractmethod
 
 from planarCommon.planarEnv import PlanarEnv
+from forwardKinematics.planarFks.planarArmFk import PlanarArmFk
 
 
 class NLinkReacherEnv(PlanarEnv):
@@ -24,6 +25,7 @@ class NLinkReacherEnv(PlanarEnv):
         self._limUpAcc = np.ones(self._n) * self.MAX_ACC
         self._limUpTor = np.ones(self._n) * self.MAX_TOR
         self.setSpaces()
+        self._fk = PlanarArmFk(self._n)
 
     @abstractmethod
     def setSpaces(self):
@@ -50,18 +52,6 @@ class NLinkReacherEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def forwardKinematics(self, lastLinkIndex):
-        fk = np.array([0.0, 0.2, 0.0])
-        for i in range(lastLinkIndex):
-            angle = 0.0
-            for j in range(i + 1):
-                angle += self.state[j]
-            fk[0] += np.cos(angle) * self.LINK_LENGTH
-            fk[1] += np.sin(angle) * self.LINK_LENGTH
-            fk[2] += self.state[i]
-        fk[2] += self.state[lastLinkIndex]
-        return fk
-
     def render(self, mode="human"):
         bound = self.LINK_LENGTH * self._n + 0.2
         bounds = [bound, bound]
@@ -79,15 +69,13 @@ class NLinkReacherEnv(PlanarEnv):
     def renderBase(self):
         from gym.envs.classic_control import rendering
         base = self.viewer.draw_polygon([(-0.2, 0), (0.0, 0.2), (0.2, 0), (-0.2, 0)])
-        baseJoint = self.viewer.draw_circle(0.10)
-        baseJoint.set_color(0.8, 0.8, 0)
-        tf0 = rendering.Transform(rotation=0, translation=(0.0, 0.2))
-        baseJoint.add_attr(tf0)
+        tf0 = rendering.Transform(rotation=0, translation=(0.0, -0.2))
+        base.add_attr(tf0)
 
     def renderLink(self, i):
         from gym.envs.classic_control import rendering
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
-        fk = self.forwardKinematics(i)
+        fk = self._fk.fk(self.state[0:self._n], i)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
@@ -98,7 +86,7 @@ class NLinkReacherEnv(PlanarEnv):
 
     def renderEndEffector(self):
         from gym.envs.classic_control import rendering
-        fk = self.forwardKinematics(self._n)
+        fk = self._fk.fk(self.state[0:self._n], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self.viewer.draw_circle(0.10)
         eejoint.set_color(0.8, 0.8, 0)
