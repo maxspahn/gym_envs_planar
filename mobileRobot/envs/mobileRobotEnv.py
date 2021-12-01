@@ -2,6 +2,8 @@ import numpy as np
 import time
 from abc import abstractmethod
 
+from forwardKinematics.planarFks.mobileRobotFk import MobileRobotFk
+
 from planarCommon.planarEnv import PlanarEnv
 
 
@@ -29,6 +31,7 @@ class MobileRobotEnv(PlanarEnv):
         self._limUpAcc = self.joinLimits(np.array([self.MAX_ACC_BASE]), np.ones(self._n-1) * self.MAX_ACC)
         self._limUpTor = self.joinLimits(np.array([self.MAX_FOR_BASE]), np.ones(self._n-1) * self.MAX_TOR)
         self.setSpaces()
+        self._fk = MobileRobotFk(self._n, baseHeight=self.BASE_HEIGHT)
 
     def joinLimits(self, limBas, limArm):
         return np.concatenate((limBas, limArm))
@@ -60,18 +63,6 @@ class MobileRobotEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def forwardKinematics(self, lastLinkIndex):
-        fk = np.array([self.state[0], self.BASE_HEIGHT+0.2, 0.0])
-        for i in range(lastLinkIndex):
-            angle = 0.0
-            for j in range(i+1):
-                angle += self.state[j+1]
-            fk[0] += np.cos(angle) * self.LINK_LENGTH
-            fk[1] += np.sin(angle) * self.LINK_LENGTH
-            fk[2] += self.state[i+1]
-        fk[2] += self.state[lastLinkIndex+1]
-        return fk
-
     def render(self, mode="human"):
         bound = self.MAX_POS_BASE + 1.0
         bounds = [bound, bound]
@@ -81,7 +72,7 @@ class MobileRobotEnv(PlanarEnv):
         self.viewer.draw_line((-5.5, 0), (5.5, 0))
 
         self.renderBase()
-        for i in range(self._n-1):
+        for i in range(1, self._n):
             self.renderLink(i)
         self.renderEndEffector()
         time.sleep(self.dt())
@@ -104,18 +95,18 @@ class MobileRobotEnv(PlanarEnv):
     def renderLink(self, i):
         from gym.envs.classic_control import rendering
         l,r,t,b = 0, self.LINK_LENGTH, .01, -.01
-        fk = self.forwardKinematics(i)
+        fk = self._fk.fk(self.state[0: self._n], i)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         link = self.viewer.draw_polygon([(l,b), (l,t), (r,t), (r,b)])
         link.set_color(0,.8, .8)
-        link.add_attr(tf)
         joint = self.viewer.draw_circle(.10)
         joint.set_color(.8, .8, 0)
+        link.add_attr(tf)
         joint.add_attr(tf)
 
     def renderEndEffector(self):
         from gym.envs.classic_control import rendering
-        fk = self.forwardKinematics(self._n-1)
+        fk = self._fk.fk(self.state[0: self._n], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self.viewer.draw_circle(.10)
         eejoint.set_color(.8, .8, 0)
