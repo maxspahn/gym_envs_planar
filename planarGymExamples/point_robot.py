@@ -3,7 +3,6 @@ import pointRobot
 import numpy as np
 
 obstacles = False
-goal = False
 
 
 def main():
@@ -22,10 +21,6 @@ def main():
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
-        if goal:
-            from planarGymExamples.goal import goal1
-
-            env.addGoal(goal1)
         print("Starting episode")
         t = 0
         for i in range(n_steps):
