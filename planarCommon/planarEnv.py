@@ -91,7 +91,7 @@ class PlanarEnv(core.Env):
         for obst in self._obsts:
             obst.renderGym(self.viewer, t=self.t())
         for goal in self._goals:
-            goal.renderGym(self.viewer)
+            goal.renderGym(self.viewer, t=self.t())
 
     def close(self):
         if self.viewer:
