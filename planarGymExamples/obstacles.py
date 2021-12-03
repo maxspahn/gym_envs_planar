@@ -1,4 +1,5 @@
 from MotionPlanningEnv.sphereObstacle import SphereObstacle
+from MotionPlanningEnv.dynamicSphereObstacle import DynamicSphereObstacle
 
 obst1Dict = {
     "dim": 2,
@@ -12,3 +13,15 @@ obst2Dict = {
     "geometry": {"position": [2.0, -1.0], "radius": 0.2},
 }
 sphereObst2 = SphereObstacle(name="simpleSphere", contentDict=obst2Dict)
+dynamicObst1Dict = {
+    "dim": 2,
+    'type': 'dynamicSphere',
+    'geometry': {'trajectory': ['1.1 * t', '-2.0 + 0.1 * t'], 'radius': 0.2},
+}
+dynamicSphereObst1 = DynamicSphereObstacle(name="dynamicSphere", contentDict= dynamicObst1Dict)
+dynamicObst2Dict = {
+    "dim": 2,
+    'type': 'dynamicSphere',
+    'geometry': {'trajectory': ['3 - 0.5 * t**2', '2.0 - 0.1 * t'], 'radius': 0.2},
+}
+dynamicSphereObst2 = DynamicSphereObstacle(name="dynamicSphere", contentDict= dynamicObst2Dict)

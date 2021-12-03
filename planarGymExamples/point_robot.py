@@ -18,10 +18,12 @@ def main():
     for e in range(n_episodes):
         ob = env.reset(pos=initPos, vel=initVel)
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2
+            from planarGymExamples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1, dynamicSphereObst2
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
+            env.addObstacle(dynamicSphereObst1)
+            env.addObstacle(dynamicSphereObst2)
         if goal:
             from planarGymExamples.goal import goal1
 
