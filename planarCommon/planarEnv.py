@@ -15,6 +15,7 @@ class PlanarEnv(core.Env):
         self.state = None
         self.seed()
         self._dt = dt
+        self._t = 0.0
         self._render = render
         self._obsts = []
         self._goals = []
@@ -36,9 +37,13 @@ class PlanarEnv(core.Env):
     def addGoal(self, goal):
         self._goals.append(goal)
 
+    def t(self):
+        return self._t
+
     def resetCommon(self):
         self._obsts = []
         self._goals = []
+        self._t = 0.0
 
     def reset(self, pos=None, vel=None):
         self.resetCommon()
@@ -66,6 +71,7 @@ class PlanarEnv(core.Env):
         pass
 
     def integrate(self):
+        self._t += self.dt()
         x0 = self.state[0 : 2 * self._n]
         t = np.arange(0, 2 * self._dt, self._dt)
         ynext = odeint(self.continuous_dynamics, x0, t)
@@ -83,9 +89,9 @@ class PlanarEnv(core.Env):
             self.viewer = rendering.Viewer(500, 500)
             self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
         for obst in self._obsts:
-            obst.renderGym(self.viewer)
+            obst.renderGym(self.viewer, t=self.t())
         for goal in self._goals:
-            goal.renderGym(self.viewer)
+            goal.renderGym(self.viewer, t=self.t())
 
     def close(self):
         if self.viewer:
