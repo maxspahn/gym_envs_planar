@@ -25,9 +25,9 @@ def main():
             env.addObstacle(dynamicSphereObst1)
             env.addObstacle(dynamicSphereObst2)
         if goal:
-            from planarGymExamples.goal import goal1
+            from planarGymExamples.goal import splineGoal
 
-            env.addGoal(goal1)
+            env.addGoal(splineGoal)
         print("Starting episode")
         t = 0
         for i in range(n_steps):

@@ -17,14 +17,15 @@ def main():
     for e in range(n_episodes):
         ob = env.reset(pos=np.random.rand(n))
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2
+            from planarGymExamples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst2
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
+            env.addObstacle(dynamicSphereObst2)
         if goal:
-            from planarGymExamples.goal import goal1
+            from planarGymExamples.goal import splineGoal
 
-            env.addGoal(goal1)
+            env.addGoal(splineGoal)
         print("Starting episode")
         for i in range(n_steps):
             action = env.action_space.sample()
