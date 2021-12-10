@@ -65,6 +65,7 @@ class GroundRobotEnv(PlanarEnv):
         return (self._get_ob(), reward, terminal, {})
 
     def integrate(self):
+        self._t += self.dt()
         x0 = self.state
         t = np.arange(0, 2 * self._dt, self._dt)
         ynext = odeint(self.continuous_dynamics, x0, t)
