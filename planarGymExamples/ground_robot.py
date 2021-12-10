@@ -18,10 +18,11 @@ def main():
             pos=np.array([0.0, 1.0, 0.6 * np.pi, 0.5]), vel=np.array([0.1, 0.0, 0.1])
         )
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2
+            from planarGymExamples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
+            env.addObstacle(dynamicSphereObst1)
         # ob = env.reset(pos=np.array([0.0, 1.0, 0.6 * np.pi]), vel=np.array([0.1, 0.0]))
         print("Starting episode")
         for i in range(n_steps):
