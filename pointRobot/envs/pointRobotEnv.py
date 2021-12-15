@@ -24,14 +24,9 @@ class PointRobotEnv(PlanarEnv):
     def setSpaces(self):
         pass
 
-    def step(self, a):
-        self.action = a
-        self.integrate()
-        terminal = self._terminal()
-        reward = -1.0 if not terminal else 0.0
-        if self._render:
-            self.render()
-        return (self._get_ob(), reward, terminal, {})
+    def _reward(self):
+        reward = -1.0 if not self._terminal() else 0.0
+        return reward
 
     def _terminal(self):
         return False

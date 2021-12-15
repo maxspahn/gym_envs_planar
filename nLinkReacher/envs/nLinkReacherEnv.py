@@ -31,22 +31,12 @@ class NLinkReacherEnv(PlanarEnv):
     def setSpaces(self):
         pass
 
-    def step(self, a):
-        self.action = a
-        _ = self.continuous_dynamics(self.state, 0)
-        ns = self.integrate()
-        self.state = ns
-        terminal = self._terminal()
-        reward = -1.0 if not terminal else 0.0
-        if self._render:
-            self.render()
-        return (self._get_ob(), reward, terminal, {})
-
-    def _get_ob(self):
-        return self.state
-
     def _terminal(self):
         return False
+
+    def _reward(self):
+        reward = -1.0 if not self._terminal() else 0.0
+        return reward
 
     @abstractmethod
     def continuous_dynamics(self, x, t):
@@ -75,7 +65,7 @@ class NLinkReacherEnv(PlanarEnv):
     def renderLink(self, i):
         from gym.envs.classic_control import rendering
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
-        fk = self._fk.fk(self.state[0:self._n], i)
+        fk = self._fk.fk(self.state['x'], i)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
@@ -86,7 +76,7 @@ class NLinkReacherEnv(PlanarEnv):
 
     def renderEndEffector(self):
         from gym.envs.classic_control import rendering
-        fk = self._fk.fk(self.state[0:self._n], self._n)
+        fk = self._fk.fk(self.state['x'], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self.viewer.draw_circle(0.10)
         eejoint.set_color(0.8, 0.8, 0)

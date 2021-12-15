@@ -12,7 +12,7 @@ def main():
     n_steps = 1000
     cumReward = 0.0
     for e in range(n_episodes):
-        ob = env.reset(pos=np.array([-2.0]), vel=np.array([2.0]))
+        ob = env.reset(pos=np.array([-2.0]), vel=np.array([0.5]))
         if obstacles:
             from planarGymExamples.obstacles import sphereObst1, sphereObst2
 

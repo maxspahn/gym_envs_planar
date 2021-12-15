@@ -57,12 +57,23 @@ class PlanarEnv(core.Env):
         self.state = {'x': pos, 'xdot': vel}
         return self._get_ob()
 
-    @abstractmethod
     def step(self, a):
+        self.action = a
+        self.integrate()
+        terminal = self._terminal()
+        reward = self._reward()
+        if self._render:
+            self.render()
+        return (self._get_ob(), reward, terminal, {})
+
+
+    @abstractmethod
+    def _reward(self):
         pass
 
     def _get_ob(self):
         if not self.observation_space.contains(self.state):
+            __import__('pdb').set_trace()
             raise WrongObservationError("The observation does not fit the defined observation space")
         return self.state
 
