@@ -5,6 +5,9 @@ from scipy.integrate import odeint
 from gym import core
 from gym.utils import seeding
 
+class WrongObservationError(Exception):
+    pass
+
 
 class PlanarEnv(core.Env):
 
@@ -51,16 +54,18 @@ class PlanarEnv(core.Env):
             pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
-        self.state = np.concatenate((pos, vel))
+        self.state = {'x': pos, 'xdot': vel}
         return self._get_ob()
 
     @abstractmethod
     def step(self, a):
         pass
 
-    @abstractmethod
     def _get_ob(self):
-        pass
+        if not self.observation_space.contains(self.state):
+            __import__('pdb').set_trace()
+            raise WrongObservationError("The observation does not fit the defined observation space")
+        return self.state
 
     @abstractmethod
     def _terminal(self):
@@ -72,10 +77,11 @@ class PlanarEnv(core.Env):
 
     def integrate(self):
         self._t += self.dt()
-        x0 = self.state[0 : 2 * self._n]
         t = np.arange(0, 2 * self._dt, self._dt)
+        x0 = np.concatenate((self.state['x'], self.state['xdot']))
         ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
+        self.state['x'] = ynext[1][0:self._n]
+        self.state['xdot'] = ynext[1][self._n:2*self._n]
 
     @abstractmethod
     def render(self, mode="human"):
