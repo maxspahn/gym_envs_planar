@@ -49,15 +49,14 @@ class GroundRobotEnv(PlanarEnv):
             pos = np.zeros(3)
         if not isinstance(vel, np.ndarray) or not vel.size == 2:
             vel = np.zeros(2)
-        self.state = np.concatenate((pos, vel))
+        self.state = {'x': pos, 'vel': vel}
         return self._get_ob()
 
     def step(self, a):
         s = self.state
         self.action = a
         _ = self.continuous_dynamics(s, 0)
-        ns = self.integrate()
-        self.state = ns
+        self.integrate()
         terminal = self._terminal()
         reward = -1.0 if not terminal else 0.0
         if self._render:
@@ -66,13 +65,15 @@ class GroundRobotEnv(PlanarEnv):
 
     def integrate(self):
         self._t += self.dt()
-        x0 = self.state
+        x0 = np.concatenate((self.state['x'], self.state['vel']))
         t = np.arange(0, 2 * self._dt, self._dt)
         ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
+        self.state['x'] = ynext[1][0:3]
+        self.state['vel'] = ynext[1][3:5]
 
     def _get_ob(self):
-        return np.concatenate((self.state, self.pos_der))
+        self.state['xdot'] = self.pos_der
+        return self.state
 
     def _terminal(self):
         return False
@@ -92,9 +93,9 @@ class GroundRobotEnv(PlanarEnv):
         self.viewer.draw_line((-bound_x, 0.0), (bound_x, 0.0))
         self.viewer.draw_line((0.0, -bound_y), (0.0, bound_y))
 
-        p = [self.state[0], self.state[1]]
+        p = self.state['x'][0:2]
+        theta = self.state['x'][2]
 
-        theta = self.state[2]
         tf = rendering.Transform(rotation=theta, translation=p)
 
         l, r, t, b = (
