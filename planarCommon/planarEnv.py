@@ -63,7 +63,6 @@ class PlanarEnv(core.Env):
 
     def _get_ob(self):
         if not self.observation_space.contains(self.state):
-            __import__('pdb').set_trace()
             raise WrongObservationError("The observation does not fit the defined observation space")
         return self.state
 
