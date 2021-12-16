@@ -87,7 +87,15 @@ class PlanarEnv(core.Env):
             return None
         if self.viewer is None:
             self.viewer = rendering.Viewer(500, 500)
-            self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
+            if isinstance(bounds, list):
+                self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
+            elif isinstance(bounds, dict):
+                self.viewer.set_bounds(
+                    bounds['pos']['low'][0],
+                    bounds['pos']['high'][0],
+                    bounds['pos']['low'][1],
+                    bounds['pos']['high'][1],
+                )
         for obst in self._obsts:
             obst.renderGym(self.viewer, t=self.t())
         for goal in self._goals:

@@ -17,6 +17,7 @@ def main():
     cumReward = 0.0
     for e in range(n_episodes):
         ob = env.reset(pos=initPos, vel=initVel)
+        env.resetLimits(pos={'high': np.array([1.0, 1.0]), 'low': np.array([-1.0, -1.0])})
         if obstacles:
             from planarGymExamples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1, dynamicSphereObst2
 

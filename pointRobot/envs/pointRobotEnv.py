@@ -18,6 +18,23 @@ class PointRobotEnv(PlanarEnv):
         self._limUpVel = np.ones(self._n) * self.MAX_VEL
         self._limUpAcc = np.ones(self._n) * self.MAX_ACC
         self._limUpFor = np.ones(self._n) * self.MAX_FOR
+        self._limits = {
+            'pos': {'high': np.ones(self._n) * self.MAX_POS, 'low': np.ones(self._n) * -self.MAX_POS},
+            'vel': {'high': np.ones(self._n) * self.MAX_VEL, 'low': np.ones(self._n) * -self.MAX_VEL},
+            'acc': {'high': np.ones(self._n) * self.MAX_ACC, 'low': np.ones(self._n) * -self.MAX_ACC},
+            'for': {'high': np.ones(self._n) * self.MAX_FOR, 'low': np.ones(self._n) * -self.MAX_FOR},
+        }
+        self.setSpaces()
+
+    def resetLimits(self, **kwargs):
+        for key in (kwargs.keys() & self._limits.keys()):
+            limitCandidate = kwargs.get(key)
+            for limit in (['low', 'high'] & limitCandidate.keys()):
+                if limitCandidate[limit].size == self._n:
+                    self._limits[key][limit] = limitCandidate[limit]
+                else:
+                    import logging
+                    logging.warning("Ignored reset of limit because the size of the limit is incorrect.")
         self.setSpaces()
 
     @abstractmethod
@@ -48,13 +65,12 @@ class PointRobotEnv(PlanarEnv):
         pass
 
     def render(self, mode="human"):
-        bounds = [5, 5]
-        self.renderCommon(bounds)
+        self.renderCommon(self._limits)
         from gym.envs.classic_control import rendering
 
         # drawAxis
-        self.viewer.draw_line((-bounds[0], 0), (bounds[0], 0))
-        self.viewer.draw_line((0, -bounds[1]), (0, bounds[1]))
+        self.viewer.draw_line((self._limits['pos']['low'][0], 0), (self._limits['pos']['high'][0], 0))
+        self.viewer.draw_line((0, self._limits['pos']['low'][1]), (0, self._limits['pos']['high'][1]))
         # drawPoint
         x = self.state[0:2]
         tf0 = rendering.Transform(rotation=0, translation=(x[0], x[1]))
