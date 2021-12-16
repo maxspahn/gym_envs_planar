@@ -14,16 +14,16 @@ class PointRobotEnv(PlanarEnv):
     def __init__(self, n=2, dt=0.01, render=False):
         super().__init__(render=render, dt=dt)
         self._n = n
-        self._limUpPos = np.ones(self._n) * self.MAX_POS
-        self._limUpVel = np.ones(self._n) * self.MAX_VEL
-        self._limUpAcc = np.ones(self._n) * self.MAX_ACC
-        self._limUpFor = np.ones(self._n) * self.MAX_FOR
         self._limits = {
             'pos': {'high': np.ones(self._n) * self.MAX_POS, 'low': np.ones(self._n) * -self.MAX_POS},
             'vel': {'high': np.ones(self._n) * self.MAX_VEL, 'low': np.ones(self._n) * -self.MAX_VEL},
             'acc': {'high': np.ones(self._n) * self.MAX_ACC, 'low': np.ones(self._n) * -self.MAX_ACC},
             'for': {'high': np.ones(self._n) * self.MAX_FOR, 'low': np.ones(self._n) * -self.MAX_FOR},
         }
+        self._limUpPos = self._limits['pos']['high']
+        self._limUpVel = self._limits['vel']['high']
+        self._limUpAcc = self._limits['acc']['high']
+        self._limUpFor = self._limits['for']['high']
         self.setSpaces()
 
     def resetLimits(self, **kwargs):
@@ -54,7 +54,8 @@ class PointRobotEnv(PlanarEnv):
         return (self._get_ob(), reward, terminal, {})
 
     def _get_ob(self):
-        return self.state
+        curState = self.state
+        return curState
 
     def _terminal(self):
         s = self.state
