@@ -4,7 +4,7 @@ import time
 from abc import abstractmethod
 
 from planarCommon.planarEnv import PlanarEnv
-from forwardKinematics.planarFks.planarArmFk import PlanarArmFk
+from forwardkinematics.planarFks.planarArmFk import PlanarArmFk
 
 
 class NLinkReacherEnv(PlanarEnv):
