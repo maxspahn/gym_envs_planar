@@ -8,7 +8,7 @@ setup(
                       'pyglet',
                       'scipy',
                       'casadi',
-                      'forwardKinematics'],
+                      'forwardkinematics'],
     extras_require={
         'scenes': ['MotionPlanningScenes']
     }
