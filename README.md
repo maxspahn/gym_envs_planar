@@ -5,11 +5,10 @@ In this package, generic robot for simple tests are made available for gym envir
 ## Dependencies
 
 This package depends on casadi for dynamics generation and gym.
-Dependencies should be installed through pip installation, see below.
+Dependencies will be installed through pip installation, see below.
+It uses the lightweight implementation for forward kinematics in casadi.
 
-```bash
-pip3 install -r requirements.txt
-```
+
 When obstacles are required, you must use
 ```bash
 pip3 install -r requirements_scenes.txt
