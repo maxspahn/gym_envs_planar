@@ -2,7 +2,7 @@ import numpy as np
 import time
 from abc import abstractmethod
 
-from forwardKinematics.planarFks.mobileRobotFk import MobileRobotFk
+from forwardkinematics.planarFks.mobileRobotFk import MobileRobotFk
 
 from planarCommon.planarEnv import PlanarEnv
 
