@@ -83,11 +83,28 @@ class PlanarEnv(core.Env):
 
     def renderCommon(self, bounds):
         from gym.envs.classic_control import rendering
+
         if self.state is None:
             return None
         if self.viewer is None:
-            self.viewer = rendering.Viewer(500, 500)
-            self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
+            if isinstance(bounds, list):
+                self.viewer = rendering.Viewer(500, 500)
+                self.viewer.set_bounds(-bounds[0], bounds[1], -bounds[1], bounds[1])
+            elif isinstance(bounds, dict):
+                ratio = (bounds["pos"]["high"][0] - bounds["pos"]["low"][0]) / (
+                    bounds["pos"]["high"][1] - bounds["pos"]["low"][1]
+                )
+                if ratio > 1:
+                    windowSize = (1000, int(1000 / ratio))
+                else:
+                    windowSize = (int(ratio * 1000), 1000)
+                self.viewer = rendering.Viewer(windowSize[0], windowSize[1])
+                self.viewer.set_bounds(
+                    bounds["pos"]["low"][0],
+                    bounds["pos"]["high"][0],
+                    bounds["pos"]["low"][1],
+                    bounds["pos"]["high"][1],
+                )
         for obst in self._obsts:
             obst.renderGym(self.viewer, t=self.t())
         for goal in self._goals:
