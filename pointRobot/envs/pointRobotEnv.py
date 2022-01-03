@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 from planarCommon.planarEnv import PlanarEnv
 
+
 class PointRobotEnv(PlanarEnv):
 
     MAX_VEL = 10
