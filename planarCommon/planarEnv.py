@@ -1,12 +1,28 @@
 from abc import abstractmethod
 import numpy as np
 from scipy.integrate import odeint
+import warnings
 
 from gym import core
 from gym.utils import seeding
 
+
 class WrongObservationError(Exception):
-    pass
+    def __init__(self, msg, observation, observationSpace):
+        msgExt = self.getWrongObservation(observation, observationSpace)
+        super().__init__(msg + msgExt)
+
+    def getWrongObservation(self, o, os):
+        msgExt = ": "
+        for key in o.keys():
+            if not os[key].contains(o[key]):
+                msgExt += "Error in " + key
+                for i, val in enumerate(o[key]):
+                    if val < os[key].low[i]:
+                        msgExt += f"[{i}]: {val} < {os[key].low[i]}"
+                    elif val > os[key].high[i]:
+                        msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+        return msgExt
 
 
 class PlanarEnv(core.Env):
@@ -72,9 +88,10 @@ class PlanarEnv(core.Env):
         pass
 
     def _get_ob(self):
-        if not self.observation_space.contains(self.state):
-            __import__('pdb').set_trace()
-            raise WrongObservationError("The observation does not fit the defined observation space")
+        observation = self.state
+        if not self.observation_space.contains(observation):
+            err = WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
+            warnings.warn(str(err))
         return self.state
 
     @abstractmethod
