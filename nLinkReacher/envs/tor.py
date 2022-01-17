@@ -13,8 +13,10 @@ class NLinkTorReacherEnv(NLinkReacherEnv):
         self._g = 10
 
     def setSpaces(self):
-        o = np.concatenate((self._limUpPos, self._limUpVel))
-        self.observation_space = spaces.Box(low=-o, high=o, dtype=np.float64)
+        self.observation_space = spaces.Dict({
+            'x': spaces.Box(low=-self._limUpPos, high=self._limUpPos, dtype=np.float64),
+            'xdot': spaces.Box(low=-self._limUpVel, high=self._limUpVel, dtype=np.float64),
+        })
         self.action_space = spaces.Box(
             low=-self._limUpTor, high=self._limUpTor, dtype=np.float64
         )

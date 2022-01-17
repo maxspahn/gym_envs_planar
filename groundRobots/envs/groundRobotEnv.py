@@ -14,12 +14,12 @@ class GroundRobotEnv(PlanarEnv):
     LINK_MASS_BASE = 5.0  #: [kg] mass of link 1
 
     MAX_POS_BASE = 5
-    MAX_POS_BASE_THETA = np.pi
+    MAX_POS_BASE_THETA = 5 * np.pi
     MAX_VEL_BASE = 5
     MAX_VEL_BASE_THETA = 5
     MAX_ACC_BASE = 100
     MAX_ACC_BASE_THETA = 100
-    MAX_VEL_FORWARD = 1.0
+    MAX_VEL_FORWARD = 3.0
     MAX_ACC_FORWARD = 100
 
     def __init__(self, render=False, dt=0.01):
@@ -36,7 +36,6 @@ class GroundRobotEnv(PlanarEnv):
         )
         self._limUpRelAcc = np.array([self.MAX_ACC_FORWARD, self.MAX_ACC_BASE_THETA])
         self.setSpaces()
-        self.pos_der = np.zeros(3)
 
     @abstractmethod
     def setSpaces(self):
@@ -49,30 +48,32 @@ class GroundRobotEnv(PlanarEnv):
             pos = np.zeros(3)
         if not isinstance(vel, np.ndarray) or not vel.size == 2:
             vel = np.zeros(2)
-        self.state = np.concatenate((pos, vel))
+        self.state = {'x': pos, 'vel': vel, 'xdot': self.computeXdot(pos, vel)}
         return self._get_ob()
 
-    def step(self, a):
-        s = self.state
-        self.action = a
-        _ = self.continuous_dynamics(s, 0)
-        ns = self.integrate()
-        self.state = ns
-        terminal = self._terminal()
-        reward = -1.0 if not terminal else 0.0
-        if self._render:
-            self.render()
-        return (self._get_ob(), reward, terminal, {})
+    def computeXdot(self, x, vel):
+        assert x.size == 3
+        assert vel.size == 2
+        return np.array(
+                [
+                    np.cos(x[2]) * vel[0],
+                    np.sin(x[2]) * vel[0],
+                    vel[1],
+                ]
+            )
+
+    def _reward(self):
+        reward = -1.0 if not self._terminal() else 0.0
+        return reward
 
     def integrate(self):
         self._t += self.dt()
-        x0 = self.state
+        x0 = np.concatenate((self.state['x'], self.state['vel'], self.state['xdot']))
         t = np.arange(0, 2 * self._dt, self._dt)
         ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
-
-    def _get_ob(self):
-        return np.concatenate((self.state, self.pos_der))
+        self.state['x'] = ynext[1][0:3]
+        self.state['vel'] = ynext[1][3:5]
+        self.state['xdot'] = ynext[1][5:8]
 
     def _terminal(self):
         return False
@@ -92,9 +93,9 @@ class GroundRobotEnv(PlanarEnv):
         self.viewer.draw_line((-bound_x, 0.0), (bound_x, 0.0))
         self.viewer.draw_line((0.0, -bound_y), (0.0, bound_y))
 
-        p = [self.state[0], self.state[1]]
+        p = self.state['x'][0:2]
+        theta = self.state['x'][2]
 
-        theta = self.state[2]
         tf = rendering.Transform(rotation=theta, translation=p)
 
         l, r, t, b = (

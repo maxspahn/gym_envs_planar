@@ -12,7 +12,7 @@ class MobileRobotEnv(PlanarEnv):
 
     BASE_HEIGHT = 1.0 # [m]
     BASE_WIDTH = 1.0 # [m]
-    LINK_LENGTH = 1.0  # [m]
+    LINK_LENGTH = 1.0 # [m]
 
     MAX_VEL_BASE = 1
     MAX_POS_BASE = 5.0
@@ -40,24 +40,17 @@ class MobileRobotEnv(PlanarEnv):
     def setSpaces(self):
         pass
 
-    def step(self, a):
-        s = self.state
-        self.action = a
-        ns = self.integrate()
-        self.state = ns
-        terminal = self._terminal()
-        reward = -1.0 if not terminal else 0.0
-        if self._render:
-            self.render()
-        return (self._get_ob(), reward, terminal, {})
-
     def _get_ob(self):
         return self.state
 
     def _terminal(self):
-        if self.state[0] > self.MAX_POS_BASE or self.state[0] < -self.MAX_POS_BASE:
+        if self.state['x'][0] > self.MAX_POS_BASE or self.state['x'][0] < -self.MAX_POS_BASE:
             return True
         return False
+
+    def _reward(self):
+        reward = -1.0 if not self._terminal() else 0.0
+        return reward
 
     @abstractmethod
     def continuous_dynamics(self, x, t):
@@ -81,21 +74,21 @@ class MobileRobotEnv(PlanarEnv):
     def renderBase(self):
         from gym.envs.classic_control import rendering
         l, r, t, b = -0.5 * self.BASE_WIDTH, 0.5 * self.BASE_WIDTH, 0.5 * self.BASE_HEIGHT, -0.5 * self.BASE_HEIGHT
-        tf = rendering.Transform(rotation=0, translation=(self.state[0], 0.5 * self.BASE_HEIGHT))
+        tf = rendering.Transform(rotation=0, translation=(self.state['x'][0], 0.5 * self.BASE_HEIGHT))
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
         link.add_attr(tf)
         base = self.viewer.draw_polygon([(-0.2,-0.2), (0.0,0.0), (0.0,0.0), (0.2,-0.2)])
         baseJoint = self.viewer.draw_circle(.10)
         baseJoint.set_color(.8, .8, 0)
-        tf0 = rendering.Transform(rotation=0, translation=(self.state[0], self.BASE_HEIGHT + 0.2))
+        tf0 = rendering.Transform(rotation=0, translation=(self.state['x'][0], self.BASE_HEIGHT + 0.2))
         baseJoint.add_attr(tf0)
         base.add_attr(tf0)
 
     def renderLink(self, i):
         from gym.envs.classic_control import rendering
         l,r,t,b = 0, self.LINK_LENGTH, .01, -.01
-        fk = self._fk.fk(self.state[0: self._n], i)
+        fk = self._fk.fk(self.state['x'], i)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         link = self.viewer.draw_polygon([(l,b), (l,t), (r,t), (r,b)])
         link.set_color(0,.8, .8)
@@ -106,7 +99,7 @@ class MobileRobotEnv(PlanarEnv):
 
     def renderEndEffector(self):
         from gym.envs.classic_control import rendering
-        fk = self._fk.fk(self.state[0: self._n], self._n)
+        fk = self._fk.fk(self.state['x'], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self.viewer.draw_circle(.10)
         eejoint.set_color(.8, .8, 0)

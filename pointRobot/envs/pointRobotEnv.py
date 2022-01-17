@@ -42,24 +42,11 @@ class PointRobotEnv(PlanarEnv):
     def setSpaces(self):
         pass
 
-    def step(self, a):
-        s = self.state
-        self.action = a
-        _ = self.continuous_dynamics(self.state, 0)
-        ns = self.integrate()
-        self.state = ns
-        terminal = self._terminal()
-        reward = -1.0 if not terminal else 0.0
-        if self._render:
-            self.render()
-        return (self._get_ob(), reward, terminal, {})
-
-    def _get_ob(self):
-        curState = self.state
-        return curState
+    def _reward(self):
+        reward = -1.0 if not self._terminal() else 0.0
+        return reward
 
     def _terminal(self):
-        s = self.state
         return False
 
     @abstractmethod
@@ -74,7 +61,7 @@ class PointRobotEnv(PlanarEnv):
         self.viewer.draw_line((self._limits['pos']['low'][0], 0), (self._limits['pos']['high'][0], 0))
         self.viewer.draw_line((0, self._limits['pos']['low'][1]), (0, self._limits['pos']['high'][1]))
         # drawPoint
-        x = self.state[0:2]
+        x = self.state['x'][0:2]
         tf0 = rendering.Transform(rotation=0, translation=(x[0], x[1]))
         joint = self.viewer.draw_circle(.10)
         joint.set_color(.8, .8, 0)

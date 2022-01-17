@@ -1,9 +1,28 @@
 from abc import abstractmethod
 import numpy as np
 from scipy.integrate import odeint
+import warnings
 
 from gym import core
 from gym.utils import seeding
+
+
+class WrongObservationError(Exception):
+    def __init__(self, msg, observation, observationSpace):
+        msgExt = self.getWrongObservation(observation, observationSpace)
+        super().__init__(msg + msgExt)
+
+    def getWrongObservation(self, o, os):
+        msgExt = ": "
+        for key in o.keys():
+            if not os[key].contains(o[key]):
+                msgExt += "Error in " + key
+                for i, val in enumerate(o[key]):
+                    if val < os[key].low[i]:
+                        msgExt += f"[{i}]: {val} < {os[key].low[i]}"
+                    elif val > os[key].high[i]:
+                        msgExt += f"[{i}]: {val} > {os[key].high[i]}"
+        return msgExt
 
 
 class PlanarEnv(core.Env):
@@ -51,16 +70,29 @@ class PlanarEnv(core.Env):
             pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
-        self.state = np.concatenate((pos, vel))
+        self.state = {'x': pos, 'xdot': vel}
         return self._get_ob()
 
-    @abstractmethod
     def step(self, a):
-        pass
+        self.action = a
+        self.integrate()
+        terminal = self._terminal()
+        reward = self._reward()
+        if self._render:
+            self.render()
+        return (self._get_ob(), reward, terminal, {})
+
 
     @abstractmethod
-    def _get_ob(self):
+    def _reward(self):
         pass
+
+    def _get_ob(self):
+        observation = self.state
+        if not self.observation_space.contains(observation):
+            err = WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
+            warnings.warn(str(err))
+        return self.state
 
     @abstractmethod
     def _terminal(self):
@@ -72,10 +104,11 @@ class PlanarEnv(core.Env):
 
     def integrate(self):
         self._t += self.dt()
-        x0 = self.state[0 : 2 * self._n]
         t = np.arange(0, 2 * self._dt, self._dt)
+        x0 = np.concatenate((self.state['x'], self.state['xdot']))
         ynext = odeint(self.continuous_dynamics, x0, t)
-        return ynext[1]
+        self.state['x'] = ynext[1][0:self._n]
+        self.state['xdot'] = ynext[1][self._n:2*self._n]
 
     @abstractmethod
     def render(self, mode="human"):

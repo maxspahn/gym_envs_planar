@@ -29,22 +29,12 @@ class MobileBaseEnv(PlanarEnv):
     def setSpaces(self):
         pass
 
-    def step(self, a):
-        self.action = a
-        _ = self.continuous_dynamics(self.state, 0.0)
-        ns = self.integrate()
-        self.state = ns
-        terminal = self._terminal()
-        reward = -1.0 if not terminal else 0.0
-        if self._render:
-            self.render()
-        return (self._get_ob(), reward, terminal, {})
-
-    def _get_ob(self):
-        return self.state
+    def _reward(self):
+        reward = -1.0 if not self._terminal() else 0.0
+        return reward
 
     def _terminal(self):
-        if self.state[0] > self.MAX_POS or self.state[0] < -self.MAX_POS:
+        if self.state['x'][0] > self.MAX_POS or self.state['x'][0] < -self.MAX_POS:
             return True
         return False
 
@@ -61,7 +51,7 @@ class MobileBaseEnv(PlanarEnv):
         # drawAxis
         self.viewer.draw_line((-bound-0.5, 0), (bound+0.5, 0))
 
-        p0 = [self.state[0], 0.5 * self.BASE_HEIGHT]
+        p0 = [self.state['x'][0], 0.5 * self.BASE_HEIGHT]
         tf = rendering.Transform(rotation=0, translation=p0)
         l, r, t, b = -0.5 * self.BASE_WIDTH, 0.5 * self.BASE_WIDTH, 0.5 * self.BASE_HEIGHT, -0.5 * self.BASE_HEIGHT
         link = self.viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])

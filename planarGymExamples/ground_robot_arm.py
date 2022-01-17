@@ -6,8 +6,8 @@ obstacles = False
 
 
 def main():
-    env = gym.make("ground-robot-vel-v0", render=True, dt=0.01)
-    defaultAction = np.array([1.1, 0.50])
+    env = gym.make("ground-robot-arm-vel-v0", render=True, dt=0.01)
+    defaultAction = np.array([1.1, 0.50, 0.2])
     # env = gym.make('ground-robot-vel-v0', render=True, dt=0.01)
     # defaultAction = np.array([1.0, 0.0])
     n_episodes = 1
