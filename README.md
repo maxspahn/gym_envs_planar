@@ -9,14 +9,35 @@ Dependencies will be installed through pip installation, see below.
 It uses the lightweight implementation for forward kinematics in casadi.
 
 
-When obstacles are required, you must use
-```bash
-pip3 install -r requirements_scenes.txt
-```
 
 ## Installation
+Clone the repository 
 ```bash
-pip3 install -e .
+git clone git@github.com:maxspahn/gym_envs_planar.git
+```
+### virtual environment installation using poetry
+If you are not familiar with poetry see [Poetry Installation](https://python-poetry.org/docs/).
+Once poetry is installed you can run
+```bash
+poetry install
+```
+If you want the motion planning scenes
+```bash
+poetry install -E scenes
+```
+The virtual environment with everything installed is entered with
+```bash
+poetry shell
+```
+
+### global installation via pip
+```bash
+pip3 install .
+```
+
+When obstacles are required, you must use
+```bash
+pip3 install ".[scenes]"
 ```
 
 ## Switching
