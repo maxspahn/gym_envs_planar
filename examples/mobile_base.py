@@ -1,5 +1,5 @@
 import gym
-import mobileBase
+import planarenvs.mobileBase
 import numpy as np
 
 obstacles = False
@@ -14,7 +14,7 @@ def main():
     for e in range(n_episodes):
         ob = env.reset(pos=np.array([-2.0]), vel=np.array([0.5]))
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2
+            from examples.obstacles import sphereObst1, sphereObst2
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)

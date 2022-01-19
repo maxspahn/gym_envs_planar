@@ -1,5 +1,5 @@
 import gym
-import mobileRobot
+import planarenvs.mobileRobot
 import numpy as np
 
 obstacles = False
@@ -17,7 +17,7 @@ def main():
     for e in range(n_episodes):
         ob = env.reset(pos=np.random.rand(n))
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2
+            from examples.obstacles import sphereObst1, sphereObst2
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)

@@ -1,9 +1,9 @@
 import gym
-import pointRobot
+import planarenvs.pointRobot
 import numpy as np
 
-obstacles = False
-goal = False
+obstacles = True
+goal = True
 
 
 def main():
@@ -19,14 +19,14 @@ def main():
         ob = env.reset(pos=initPos, vel=initVel)
         env.resetLimits(pos={'high': np.array([1.0, 3.0]), 'low': np.array([-1.0, -3.0])})
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1, dynamicSphereObst2
+            from examples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1, dynamicSphereObst2
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
             env.addObstacle(dynamicSphereObst1)
             env.addObstacle(dynamicSphereObst2)
         if goal:
-            from planarGymExamples.goal import splineGoal
+            from examples.goal import splineGoal
 
             env.addGoal(splineGoal)
         print("Starting episode")

@@ -1,5 +1,5 @@
 import gym
-import groundRobots
+import planarenvs.groundRobots
 import numpy as np
 
 obstacles = False
@@ -18,7 +18,7 @@ def main():
             pos=np.array([0.0, 1.0, 0.6 * np.pi, 0.5]), vel=np.array([0.1, 0.0, 0.1])
         )
         if obstacles:
-            from planarGymExamples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1
+            from examples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1
 
             env.addObstacle(sphereObst1)
             env.addObstacle(sphereObst2)
