@@ -1,6 +1,0 @@
-gym
-pyglet
-scipy
-casadi
-numpy
--e git+https://github.com/maxspahn/motion_planning_scenes.git@main#egg=MotionPlanningScenes

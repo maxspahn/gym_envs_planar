@@ -1,1 +1,0 @@
-from nLinkReacher.resources.createDynamics import createDynamics
