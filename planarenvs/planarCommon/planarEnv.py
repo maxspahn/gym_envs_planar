@@ -5,6 +5,7 @@ import warnings
 
 from gym import core
 from gym.utils import seeding
+from gym import spaces
 
 
 class WrongObservationError(Exception):
@@ -38,6 +39,7 @@ class PlanarEnv(core.Env):
         self._render = render
         self._obsts = []
         self._goals = []
+        self._sensors = []
 
     @abstractmethod
     def setSpaces(self):
@@ -56,12 +58,20 @@ class PlanarEnv(core.Env):
     def addGoal(self, goal):
         self._goals.append(goal)
 
+    def addSensor(self, sensor):
+        self._sensors.append(sensor)
+        curDict = dict(self.observation_space.spaces)
+        curDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = spaces.Dict(curDict)
+
+
     def t(self):
         return self._t
 
     def resetCommon(self):
         self._obsts = []
         self._goals = []
+        #self._sensors = []
         self._t = 0.0
 
     def reset(self, pos=None, vel=None):
@@ -71,11 +81,15 @@ class PlanarEnv(core.Env):
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
         self.state = {'x': pos, 'xdot': vel}
+        ## todo: reset currently sets back observation space without considering sensors
         return self._get_ob()
 
     def step(self, a):
         self.action = a
         self.integrate()
+        #if self._sensors:
+        for sensor in self._sensors:
+            self.state[sensor.name()] = sensor.sense(self.state, self._obsts, self.t())
         terminal = self._terminal()
         reward = self._reward()
         if self._render:

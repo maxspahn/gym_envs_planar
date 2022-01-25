@@ -1,6 +1,7 @@
 import numpy as np
 import time
 from abc import abstractmethod
+from gym import spaces
 
 from planarenvs.planarCommon.planarEnv import PlanarEnv
 
@@ -36,7 +37,14 @@ class PointRobotEnv(PlanarEnv):
                 else:
                     import logging
                     logging.warning("Ignored reset of limit because the size of the limit is incorrect.")
-        self.setSpaces()
+
+        self._limUpPos = self._limits['pos']['high']
+        self._limUpVel = self._limits['vel']['high']
+        self._limUpAcc = self._limits['acc']['high']
+        self._limUpFor = self._limits['for']['high']
+        self.observation_space['x'] = spaces.Box(low=-self._limUpPos, high=self._limUpPos, dtype=np.float64)
+        self.observation_space['xdot'] = spaces.Box(low=-self._limUpVel, high=self._limUpVel, dtype=np.float64)
+
 
     @abstractmethod
     def setSpaces(self):
