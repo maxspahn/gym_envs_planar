@@ -64,7 +64,6 @@ class PlanarEnv(core.Env):
         curDict[sensor.name()] = sensor.getObservationSpace()
         self.observation_space = spaces.Dict(curDict)
 
-
     def t(self):
         return self._t
 
@@ -87,9 +86,11 @@ class PlanarEnv(core.Env):
     def step(self, a):
         self.action = a
         self.integrate()
-        #if self._sensors:
         for sensor in self._sensors:
-            self.state[sensor.name()] = sensor.sense(self.state, self._obsts, self.t())
+            if sensor.name() in ["GoalPosition", "GoalDistance"]:
+                self.state[sensor.name()] = sensor.sense(self.state, self._goals, self.t())
+            else:
+                self.state[sensor.name()] = sensor.sense(self.state, self._obsts, self.t())
         terminal = self._terminal()
         reward = self._reward()
         if self._render:
