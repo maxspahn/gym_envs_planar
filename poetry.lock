@@ -293,7 +293,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6,<3.11"
-content-hash = "9c4f1f3691afd7b238ff3051462f8e59f091ba9651175d328e4b52e8c5a799e3"
+content-hash = "e6589da938e443e5f3a71fbb41acf9c0bdd87733973ed03c89ca1a26c0b9314d"
 
 [metadata.files]
 atomicwrites = [
