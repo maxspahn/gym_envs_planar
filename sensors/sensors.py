@@ -40,7 +40,7 @@ class GoalSensor(object):
     def _reset(self):
         self._goalObs = []
 
-    def sense(self, s, goals, t=0):
+    def sense(self, s, goals, obstacles, t=0):
         self._reset()
         for idx, goal in enumerate(goals):
             if self._mode == "position":
@@ -75,7 +75,7 @@ class PseudoSensor(object):
     def _reset(self):
         self._obsts[:] = self._limSensor
 
-    def sense(self, s, obstacles, t=0):
+    def sense(self, s, goals, obstacles, t=0):
         self._reset()
         for idx, obst in enumerate(obstacles):
             if idx >= self._nbObs:
@@ -110,7 +110,7 @@ class PseudoDistSensor(object):
     def _reset(self):
         self._obsts[:] = self._limSensor
 
-    def sense(self, s, obstacles, t=0):
+    def sense(self, s, goals, obstacles, t=0):
         ## todo: check if boundaries are closer than obstacles
         # 0) compute distance to each obstacle & check if boundaries are closer than obstacles
         # 1) sort list of obstacles, closes obst first
@@ -134,7 +134,7 @@ class PseudoDistSensor(object):
             self._obsts[idx][0] = obst['currObstDist'][0]
             self._obsts[idx][1] = obst['currObstDist'][1]
         return self._obsts
-
+'''
 class PseudoGoalObsSensor(object):
     ## NOT WORKING YET!!!
     def __init__(self, obstacles=False, goals=True, nbObs=0, limSensor=10):
@@ -164,7 +164,7 @@ class PseudoGoalObsSensor(object):
         self._obsts[:] = self._limSensor
         self._goals = None
 
-    def sense(self, s=None, obstacles=[], goals=[], t=0):
+    def sense(self, s=None, goals, obstacles=[], t=0):
 
         if self._goalSensing:
             print('goals')
@@ -184,3 +184,4 @@ class PseudoGoalObsSensor(object):
 
         observation = {'goals': self._goals, 'obstacles': self._obsts}
         return observation
+'''
