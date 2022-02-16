@@ -1,5 +1,5 @@
-from sensors.AbstractSensor import Sensor
-from sensors.AbstractSensor import Dist2Circ
+from sensors.SensorCommon import Sensor
+from sensors.SensorCommon import Dist2Circ
 import numpy as np
 import operator
 

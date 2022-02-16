@@ -70,7 +70,7 @@ class PlanarEnv(core.Env):
     def resetCommon(self):
         self._obsts = []
         self._goals = []
-        #self._sensors = []
+        self._sensors = []
         self._t = 0.0
 
     def reset(self, pos=None, vel=None):
@@ -80,17 +80,13 @@ class PlanarEnv(core.Env):
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
         self.state = {'x': pos, 'xdot': vel}
-        ## todo: reset currently sets back observation space without considering sensors
         return self._get_ob()
 
     def step(self, a):
         self.action = a
         self.integrate()
         for sensor in self._sensors:
-            if sensor.name() in ["GoalPosition", "GoalDistance"]:
-                self.state[sensor.name()] = sensor.sense(self.state, self._goals, self.t())
-            else:
-                self.state[sensor.name()] = sensor.sense(self.state, self._obsts, self.t())
+            self.state[sensor.name()] = sensor.sense(self.state, self._goals, self._obsts, self.t())
         terminal = self._terminal()
         reward = self._reward()
         if self._render:
