@@ -15,9 +15,9 @@ class ObstacleSensor(Sensor):
 
     def _setSensorName(self):
         if self._mode == "position":
-            self._name = "ObstaclePseudoSensorPosition"
+            self._name = "ObstaclePosition"
         elif self._mode == "distance":
-            self._name = "ObstaclePseudoSensorDistance"
+            self._name = "ObstacleDistance"
 
     def name(self):
         return self._name
