@@ -5,7 +5,7 @@ from gym import spaces
 
 def dist2circ(pointPos, circlePos, circleRadius):
     diff = pointPos - circlePos
-    dist2center = (diff[0] ** 2 + diff[1] ** 2) ** (1 / 2)
+    dist2center = np.linalg.norm(diff)
     if dist2center < circleRadius:
         return np.zeros(2)
     diff = diff * (dist2center - circleRadius) / dist2center
