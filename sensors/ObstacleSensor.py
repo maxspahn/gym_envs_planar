@@ -6,9 +6,8 @@ import operator
 
 class ObstacleSensor(Sensor):
 
-    def __init__(self, obstacles=False, nbObstacles=0, limSensor=10, mode="position"):
+    def __init__(self, nbObstacles=0, limSensor=10, mode="position"):
         super().__init__(nbObservations=nbObstacles, limSensor=limSensor)
-        ## todo: implement obstacle and goal flag.
         self._observation = np.ones([self._nbObservations, 2]) * self._limSensor
         self._mode = mode
         self._setSensorName()
