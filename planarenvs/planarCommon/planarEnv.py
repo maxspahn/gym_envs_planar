@@ -33,6 +33,7 @@ class PlanarEnv(core.Env):
     def __init__(self, render=False, dt=0.01):
         self.viewer = None
         self.state = None
+        self.sensorState = None
         self.seed()
         self._dt = dt
         self._t = 0.0
@@ -60,9 +61,9 @@ class PlanarEnv(core.Env):
 
     def addSensor(self, sensor):
         self._sensors.append(sensor)
-        curDict = dict(self.observation_space.spaces)
-        curDict[sensor.name()] = sensor.getObservationSpace()
-        self.observation_space = spaces.Dict(curDict)
+        curOSpaceDict = dict(self.observation_space.spaces)
+        curOSpaceDict[sensor.name()] = sensor.getObservationSpace()
+        self.observation_space = spaces.Dict(curOSpaceDict)
 
     def t(self):
         return self._t
@@ -80,13 +81,14 @@ class PlanarEnv(core.Env):
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
         self.state = {'x': pos, 'xdot': vel}
+        self.sensorState = {}
         return self._get_ob()
 
     def step(self, a):
         self.action = a
         self.integrate()
         for sensor in self._sensors:
-            self.state[sensor.name()] = sensor.sense(self.state, self._goals, self._obsts, self.t())
+            self.sensorState[sensor.name()] = sensor.sense(self.state, self._goals, self._obsts, self.t())
         terminal = self._terminal()
         reward = self._reward()
         if self._render:
@@ -99,11 +101,12 @@ class PlanarEnv(core.Env):
         pass
 
     def _get_ob(self):
-        observation = self.state
+        observation = dict(self.state)
+        observation.update(self.sensorState)
         if not self.observation_space.contains(observation):
             err = WrongObservationError("The observation does not fit the defined observation space", observation, self.observation_space)
             warnings.warn(str(err))
-        return self.state
+        return observation
 
     @abstractmethod
     def _terminal(self):
