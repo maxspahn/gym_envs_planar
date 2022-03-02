@@ -3,23 +3,21 @@ import numpy as np
 from gym import spaces
 
 
-def Dist2Circ(x1, y1, x2,  y2, r):
-    dx = x2 - x1
-    dy = y2 - y1
-    Dist2Center = (dx ** 2 + dy ** 2) ** (1 / 2)
-    if Dist2Center < r:
+def dist2circ(pointPos, circlePos, circleRadius):
+    diff = pointPos - circlePos
+    dist2center = (diff[0] ** 2 + diff[1] ** 2) ** (1 / 2)
+    if dist2center < circleRadius:
         return np.zeros(2)
-    dx = dx * (Dist2Center - r) / Dist2Center
-    dy = dy * (Dist2Center - r) / Dist2Center
-    return dx, dy
+    diff = diff * (dist2center - circleRadius) / dist2center
+    return diff
 
 
 class Sensor(ABC):
 
-    def __init__(self, nbObservations, SensorRange=10):
+    def __init__(self, nbObservations, limSensor=10):
         self._nbObservations = nbObservations
-        self._limSensor = SensorRange
-        self._Observation = []
+        self._limSensor = limSensor
+        self._observation = []
 
     @abstractmethod
     def name(self):

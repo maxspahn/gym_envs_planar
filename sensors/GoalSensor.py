@@ -1,14 +1,14 @@
 from sensors.SensorCommon import Sensor
-from sensors.SensorCommon import Dist2Circ
+from sensors.SensorCommon import dist2circ
 import numpy as np
 import operator
 
 
 class GoalSensor(Sensor):
 
-    def __init__(self, nbGoals=0, SensorRange=10, mode="position"):
-        super().__init__(nbObservations=nbGoals, SensorRange=SensorRange)
-        self._Observation = np.ones([self._nbObservations, 2]) * self._limSensor
+    def __init__(self, nbGoals=0, limSensor=10, mode="position"):
+        super().__init__(nbObservations=nbGoals, limSensor=limSensor)
+        self._observation = np.ones([self._nbObservations, 2]) * self._limSensor
         self._mode = mode
         self._setSensorName()
 
@@ -22,24 +22,22 @@ class GoalSensor(Sensor):
         return self._name
 
     def _reset(self):
-        self._Observation[:] = 0
+        self._observation[:] = 0
 
-    def sense(self, s, goals, obstacles, t=0):
+    def sense(self, state, goals, obstacles, t=0):
         self._reset()
         if self._mode == "position":
             for idx, goal in enumerate(goals):
                 if idx >= self._nbObservations:
                     break
-                self._Observation[idx][0] = goal.position(t=t)[0]
-                self._Observation[idx][1] = goal.position(t=t)[1]
+                self._observation[idx] = goal.position(t=t)
 
         elif self._mode == "distance":
             for idx, goal in enumerate(goals):
                 if idx >= self._nbObservations:
                     break
                 currGoalPos = goal.position(t=t)
-                currGoalDist = Dist2Circ(s['x'][0], s['x'][1], currGoalPos[0], currGoalPos[1], goal.epsilon())
-                self._Observation[idx][0] = currGoalDist[0]
-                self._Observation[idx][1] = currGoalDist[1]
+                currGoalDist = dist2circ(state['x'], currGoalPos, goal.epsilon())
+                self._observation[idx] = currGoalDist
 
-        return self._Observation.clip(-self._limSensor, self._limSensor)
+        return self._observation.clip(-self._limSensor, self._limSensor)
