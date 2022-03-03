@@ -2,8 +2,10 @@ import gym
 import planarenvs.pointRobot
 import numpy as np
 
+
 obstacles = True
 goal = True
+sensors = True
 
 
 def main():
@@ -18,6 +20,20 @@ def main():
     for e in range(n_episodes):
         ob = env.reset(pos=initPos, vel=initVel)
         env.resetLimits(pos={'high': np.array([1.0, 3.0]), 'low': np.array([-1.0, -3.0])})
+
+        if sensors:
+            from sensors.GoalSensor import GoalSensor
+            from sensors.ObstacleSensor import ObstacleSensor
+
+            obstSensorPos = ObstacleSensor(nbObstacles=2, mode='position')
+            env.addSensor(obstSensorPos)
+            obstSensorDist = ObstacleSensor(nbObstacles=2, mode='distance')
+            env.addSensor(obstSensorDist)
+            goalDistObserver = GoalSensor(nbGoals=1, mode='distance')
+            env.addSensor(goalDistObserver)
+            goalPosObserver = GoalSensor(nbGoals=1, mode='position')
+            env.addSensor(goalPosObserver)
+
         if obstacles:
             from examples.obstacles import sphereObst1, sphereObst2, dynamicSphereObst1, dynamicSphereObst2
 

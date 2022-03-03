@@ -1,6 +1,7 @@
 import numpy as np
 from gym import spaces
 
+
 class AccEnv(object):
     def setSpaces(self):
         self.observation_space = spaces.Dict({
