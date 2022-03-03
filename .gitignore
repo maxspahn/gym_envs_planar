@@ -1,3 +1,4 @@
 planarEnvs.egg-info/
 *.swp
 src
+*/__pycache__/
