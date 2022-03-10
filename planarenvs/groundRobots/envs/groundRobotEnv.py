@@ -49,6 +49,7 @@ class GroundRobotEnv(PlanarEnv):
         if not isinstance(vel, np.ndarray) or not vel.size == 2:
             vel = np.zeros(2)
         self.state = {'x': pos, 'vel': vel, 'xdot': self.computeXdot(pos, vel)}
+        self.sensorState = {}
         return self._get_ob()
 
     def computeXdot(self, x, vel):
