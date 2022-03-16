@@ -12,7 +12,7 @@ Creating the container will take a while.
 Then you can run the example using 
 ```bash
 xhost + # enables the docker to access the screen
-docker run --rm --env DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix:ro planer_gym_docker
+docker run --rm --env DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix:ro -it planer_gym_docker
 ```
 
 If you want to enter the docker and run the examples inside the docker you would call

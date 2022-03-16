@@ -2,7 +2,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=nointeractive
 
 RUN apt-get update -q && \
-  apt-get install -y git python3-pip python3 python3-dev python3-opengl vim
+  apt-get install -y git python3-pip python3 python-opengl vim
 
 ENV PYTHONPATH=${PYTHONPATH}:${PWD}
 
