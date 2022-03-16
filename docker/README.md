@@ -11,6 +11,7 @@ Creating the container will take a while.
 
 Then you can run the example using 
 ```bash
+xhost + # enables the docker to access the screen
 docker run --rm --env DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix:ro planer_gym_docker
 ```
 
