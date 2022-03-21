@@ -1,5 +1,5 @@
-from sensors.SensorCommon import Sensor
-from sensors.SensorCommon import dist2circ
+from planarenvs.sensors.SensorCommon import Sensor
+from planarenvs.sensors.SensorCommon import dist2circ
 import numpy as np
 import operator
 

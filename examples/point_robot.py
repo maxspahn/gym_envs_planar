@@ -22,8 +22,8 @@ def main():
         env.resetLimits(pos={'high': np.array([1.0, 3.0]), 'low': np.array([-1.0, -3.0])})
 
         if sensors:
-            from sensors.GoalSensor import GoalSensor
-            from sensors.ObstacleSensor import ObstacleSensor
+            from planarenvs.sensors.GoalSensor import GoalSensor
+            from planarenvs.sensors.ObstacleSensor import ObstacleSensor
 
             obstSensorPos = ObstacleSensor(nbObstacles=2, mode='position')
             env.addSensor(obstSensorPos)
