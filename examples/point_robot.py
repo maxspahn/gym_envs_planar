@@ -1,5 +1,5 @@
 import gym
-import planarenvs.point_robot #pylint: disable=unused-import
+import planarenvs.point_robot  # pylint: disable=unused-import
 import numpy as np
 
 
@@ -21,8 +21,12 @@ def main():
     )
 
     if sensors:
-        from planarenvs.sensors.goal_sensor import GoalSensor #pylint: disable=import-outside-toplevel
-        from planarenvs.sensors.obstacle_sensor import ObstacleSensor #pylint: disable=import-outside-toplevel
+        from planarenvs.sensors.goal_sensor import (
+            GoalSensor,
+        )  # pylint: disable=import-outside-toplevel
+        from planarenvs.sensors.obstacle_sensor import (
+            ObstacleSensor,
+        )  # pylint: disable=import-outside-toplevel
 
         obst_sensor_pos = ObstacleSensor(nb_obstacles=2, mode="position")
         env.add_sensor(obst_sensor_pos)
@@ -34,7 +38,7 @@ def main():
         env.add_sensor(goal_pos_observer)
 
     if obstacles:
-        from examples.obstacles import ( #pylint: disable=import-outside-toplevel
+        from examples.obstacles import (  # pylint: disable=import-outside-toplevel
             sphereObst1,
             sphereObst2,
             dynamicSphereObst1,
@@ -46,7 +50,9 @@ def main():
         env.add_obstacle(dynamicSphereObst1)
         env.add_obstacle(dynamicSphereObst2)
     if goal:
-        from examples.goal import splineGoal #pylint: disable=import-outside-toplevel
+        from examples.goal import (
+            splineGoal,
+        )  # pylint: disable=import-outside-toplevel
 
         env.add_goal(splineGoal)
 

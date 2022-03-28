@@ -1,5 +1,5 @@
 import gym
-import planarenvs.mobileRobot
+import planarenvs.mobile_robot  # pylint: disable=unused-import
 import numpy as np
 
 obstacles = False
@@ -8,27 +8,23 @@ obstacles = False
 def main():
     n = 5
     env = gym.make("mobile-robot-acc-v0", render=True, n=n, dt=0.01)
-    defaultAction = np.zeros(n)
-    defaultAction[0] = 1.0
-    defaultAction[3] = 1.0
-    n_episodes = 1
+    action = np.zeros(n)
+    action[0] = 1.0
+    action[3] = 1.0
     n_steps = 400
-    cumReward = 0.0
-    for e in range(n_episodes):
-        ob = env.reset(pos=np.random.rand(n))
-        if obstacles:
-            from examples.obstacles import sphereObst1, sphereObst2
+    ob = env.reset(pos=np.random.rand(n))
+    if obstacles:
+        from examples.obstacles import (
+            sphereObst1,
+            sphereObst2,
+        )  # pylint: disable=import-outside-toplevel
 
-            env.addObstacle(sphereObst1)
-            env.addObstacle(sphereObst2)
-        print("Starting episode")
-        for i in range(n_steps):
-            action = env.action_space.sample()
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            cumReward += reward
-            if done:
-                break
+        env.add_obstacle(sphereObst1)
+        env.add_obstacle(sphereObst2)
+    print("Starting episode")
+    for _ in range(n_steps):
+        ob, _, _, _ = env.step(action)
+        print(f"ob : {ob}")
 
 
 if __name__ == "__main__":

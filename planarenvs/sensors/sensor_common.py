@@ -31,7 +31,7 @@ class Sensor(ABC):
         return spaces.Box(
             low=-self._lim_sensor,
             high=self._lim_sensor,
-            shape=self.observation_size(),
+            shape=self._observation_size(),
             dtype=np.float64,
         )
 

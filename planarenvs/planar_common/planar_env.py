@@ -138,7 +138,9 @@ class PlanarEnv(core.Env):
         pass
 
     def render_common(self, bounds):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
+        from gym.envs.classic_control import (
+            rendering,
+        )  # pylint: disable=import-outside-toplevel
 
         if self._state is None:
             return None

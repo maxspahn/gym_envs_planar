@@ -14,7 +14,7 @@ class AccEnv(object):
                 ),
             }
         )
-        self._action_space = spaces.Box(
+        self.action_space = spaces.Box(
             low=-self._limUpAcc, high=self._limUpAcc, dtype=np.float64
         )
 

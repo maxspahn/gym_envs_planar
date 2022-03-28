@@ -48,9 +48,8 @@ class PointRobotEnv(PlanarEnv):
                 if limit_candidate[limit].size == self._n:
                     self._limits[key][limit] = limit_candidate[limit]
                 else:
-                    logging.warning("%s",
-                        "Incorrect size of limit." +
-                        "Resizing ignored."
+                    logging.warning(
+                        "%s", "Incorrect size of limit." + "Resizing ignored."
                     )
 
         self._limUpPos = self._limits["pos"]["high"]
@@ -81,7 +80,7 @@ class PointRobotEnv(PlanarEnv):
 
     def render(self, mode="human"):
         self.render_common(self._limits)
-        from gym.envs.classic_control import ( # pylint: disable=import-outside-toplevel
+        from gym.envs.classic_control import (  # pylint: disable=import-outside-toplevel
             rendering,
         )
 

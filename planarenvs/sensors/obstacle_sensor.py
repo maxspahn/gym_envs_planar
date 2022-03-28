@@ -25,7 +25,9 @@ class ObstacleSensor(Sensor):
     def _reset(self):
         self._observation[:] = self._lim_sensor
 
-    def sense(self, state: dict, goals, obstacles, t=0) -> dict: #pylint: disable=unused-argument
+    def sense(
+        self, state: dict, goals, obstacles, t=0
+    ) -> dict:  # pylint: disable=unused-argument
         self._reset()
         if self._mode == "position":
             for idx, obst in enumerate(obstacles):
