@@ -1,6 +1,12 @@
 name: Pylint
 
-on: [push]
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -20,4 +26,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --fail-under=9.5 urdfenvs
+        pylint --fail-under=9.5 planarenvs
