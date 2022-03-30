@@ -19,7 +19,7 @@ class NLinkReacherEnv(PlanarEnv):
 
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
-        self._n = n
+        self.n = n
         self._limUpPos = np.ones(self._n) * self.MAX_POS
         self._limUpVel = np.ones(self._n) * self.MAX_VEL
         self._limUpAcc = np.ones(self._n) * self.MAX_ACC

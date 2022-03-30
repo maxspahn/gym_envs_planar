@@ -1,5 +1,5 @@
 import gym
-import planarenvs.point_robot  # pylint: disable=unused-import
+import planarenvs.point_robot
 import numpy as np
 
 

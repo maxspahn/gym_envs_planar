@@ -1,5 +1,6 @@
+#pylint: disable=import-outside-toplevel
 import gym
-import planarenvs.n_link_reacher  # pylint: disable=unused-import
+import planarenvs.n_link_reacher #pylint: disable=unused-import
 import numpy as np
 
 obstacles = True
@@ -18,15 +19,14 @@ def main():
             sphereObst1,
             sphereObst2,
             dynamicSphereObst2,
-        )  # pylint: disable=import-outside-toplevel
-
+        )
         env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
         env.add_obstacle(dynamicSphereObst2)
     if goal:
         from examples.goal import (
             splineGoal,
-        )  # pylint: disable=import-outside-toplevel
+        )
 
         env.add_goal(splineGoal)
     print("Starting episode")

@@ -2,3 +2,5 @@ planarEnvs.egg-info/
 *.swp
 src
 */__pycache__/
+*.vim
+*.coverage

@@ -35,7 +35,7 @@ class WrongObservationError(Exception):
 class PlanarEnv(core.Env):
     def __init__(self, render: bool = False, dt=0.01):
         self._viewer = None
-        self._state = None
+        self._state = {'x': None, 'xdot': None}
         self._sensor_state = None
         self.seed()
         self._dt = dt
@@ -45,6 +45,19 @@ class PlanarEnv(core.Env):
         self._goals = []
         self._sensors = []
         self._observation_space = None
+        self._n = None
+
+    @property
+    def n(self):
+        return self._n
+
+    @n.setter
+    def n(self, n):
+        self._n = n
+
+    @n.deleter
+    def n(self):
+        del self._n
 
     @abstractmethod
     def set_spaces(self):
@@ -66,7 +79,8 @@ class PlanarEnv(core.Env):
     def add_sensor(self, sensor):
         self._sensors.append(sensor)
         observation_space_dict = dict(self._observation_space.spaces)
-        observation_space_dict[sensor.name()] = sensor.observation_space()
+        print(sensor.name)
+        observation_space_dict[sensor.name] = sensor.observation_space()
         self._observation_space = spaces.Dict(observation_space_dict)
 
     def t(self):
@@ -92,7 +106,7 @@ class PlanarEnv(core.Env):
         self._action = action
         self.integrate()
         for sensor in self._sensors:
-            self._sensor_state[sensor.name()] = sensor.sense(
+            self._sensor_state[sensor.name] = sensor.sense(
                 self._state, self._goals, self._obsts, self.t()
             )
         terminal = self._terminal()

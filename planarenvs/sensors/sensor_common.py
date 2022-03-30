@@ -19,10 +19,19 @@ class Sensor(ABC):
         self._nb_observations = nb_observations
         self._lim_sensor = lim_sensor
         self._observation = []
+        self._name = "Sensor"
 
-    @abstractmethod
+    @property
     def name(self):
-        pass
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    @name.deleter
+    def name(self):
+        del self._name
 
     def observation_size(self) -> tuple:
         return self._nb_observations, 2
@@ -31,7 +40,7 @@ class Sensor(ABC):
         return spaces.Box(
             low=-self._lim_sensor,
             high=self._lim_sensor,
-            shape=self._observation_size(),
+            shape=self.observation_size(),
             dtype=np.float64,
         )
 

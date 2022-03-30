@@ -16,7 +16,7 @@ class PointRobotEnv(PlanarEnv):
 
     def __init__(self, n=2, dt=0.01, render=False):
         super().__init__(render=render, dt=dt)
-        self._n = n
+        self.n = n
         self._limits = {
             "pos": {
                 "high": np.ones(self._n) * self.MAX_POS,

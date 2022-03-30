@@ -10,16 +10,14 @@ class GoalSensor(Sensor):
             np.ones([self._nb_observations, 2]) * self._lim_sensor
         )
         self._mode = mode
-        self._set_sensor_name()
+        self.name = mode
 
-    def _set_sensor_name(self):
-        if self._mode == "position":
+    @Sensor.name.setter
+    def name(self, mode):
+        if mode == "position":
             self._name = "GoalPosition"
-        elif self._mode == "distance":
+        elif mode == "distance":
             self._name = "GoalDistance"
-
-    def name(self):
-        return self._name
 
     def _reset(self):
         self._observation[:] = 0
