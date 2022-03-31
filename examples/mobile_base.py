@@ -1,31 +1,37 @@
+# pylint: disable=import-outside-toplevel
 import gym
-import planarenvs.mobileBase
+import planarenvs.mobile_base  # pylint: disable=unused-import
 import numpy as np
 
 obstacles = False
 
 
 def main():
-    env = gym.make("mobile-base-acc-v0", render=True, dt=0.01)
-    defaultAction = [0.4]
-    n_episodes = 1
-    n_steps = 1000
-    cumReward = 0.0
-    for e in range(n_episodes):
-        ob = env.reset(pos=np.array([-2.0]), vel=np.array([0.5]))
-        if obstacles:
-            from examples.obstacles import sphereObst1, sphereObst2
+    """
+    Minimal example of mobile base.
 
-            env.addObstacle(sphereObst1)
-            env.addObstacle(sphereObst2)
-        print("Starting episode")
-        for i in range(n_steps):
-            action = env.action_space.sample()
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            cumReward += reward
-            if done:
-                break
+    The mobile base robot is a block that operates on a one-dimensional plane.
+    It has thus one degree of freedom. The observation contains the current
+    position and current velocity of the robot:
+        x: [`x`]
+        xdot: [`xdot`].
+    """
+    env = gym.make("mobile-base-vel-v0", render=True, dt=0.01)
+    action = [0.4]
+    n_steps = 1000
+    ob = env.reset(pos=np.array([-2.0]), vel=np.array([0.5]))
+    if obstacles:
+        from examples.obstacles import (
+            sphereObst1,
+            sphereObst2,
+        )
+        env.add_obstacle(sphereObst1)
+        env.add_obstacle(sphereObst2)
+    print("Starting episode")
+    for i in range(n_steps):
+        ob, _, _, _ = env.step(action)
+        if i % 100 == 0:
+            print(f"ob : {ob}")
 
 
 if __name__ == "__main__":

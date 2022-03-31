@@ -1,34 +1,41 @@
+# pylint: disable=import-outside-toplevel
 import gym
-import planarenvs.mobileRobot
+import planarenvs.mobile_robot  # pylint: disable=unused-import
 import numpy as np
 
 obstacles = False
 
 
 def main():
-    n = 5
-    env = gym.make("mobile-robot-acc-v0", render=True, n=n, dt=0.01)
-    defaultAction = np.zeros(n)
-    defaultAction[0] = 1.0
-    defaultAction[3] = 1.0
-    n_episodes = 1
-    n_steps = 400
-    cumReward = 0.0
-    for e in range(n_episodes):
-        ob = env.reset(pos=np.random.rand(n))
-        if obstacles:
-            from examples.obstacles import sphereObst1, sphereObst2
+    """
+    Minimal example of mobile robot with (n-1) arm joints.
 
-            env.addObstacle(sphereObst1)
-            env.addObstacle(sphereObst2)
-        print("Starting episode")
-        for i in range(n_steps):
-            action = env.action_space.sample()
-            action = defaultAction
-            ob, reward, done, info = env.step(action)
-            cumReward += reward
-            if done:
-                break
+    The mobile robot is a block with a n-degrees of freedom arm attached.
+    It operates in the two-dimensional plane.
+    It has thus n degrees of freedom. The observation contains the current
+    position and current velocity of the robot:
+        x: [`x`, `q`]
+        xdot: [`xdot`, `qdot`].
+    """
+    n = 3
+    env = gym.make("mobile-robot-acc-v0", render=True, n=n, dt=0.01)
+    action = np.zeros(n)
+    action[0] = 1.0
+    action[3] = 1.0
+    n_steps = 1000
+    ob = env.reset(pos=np.random.rand(n))
+    if obstacles:
+        from examples.obstacles import (
+            sphereObst1,
+            sphereObst2,
+        )
+        env.add_obstacle(sphereObst1)
+        env.add_obstacle(sphereObst2)
+    print("Starting episode")
+    for i in range(n_steps):
+        ob, _, _, _ = env.step(action)
+        if i % 100 == 0:
+            print(f"ob : {ob}")
 
 
 if __name__ == "__main__":
