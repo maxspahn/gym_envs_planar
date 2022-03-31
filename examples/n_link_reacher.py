@@ -8,8 +8,16 @@ goal = True
 
 
 def main():
+    """
+    Minimal example for n-link planar robot arm.
+
+    The n-link-arm is a n-degrees of freedom robotic arm operating in the
+    two-dimensional plane. In a sense, it is extended pendulum. The observation
+    is the state of the joints:
+        x: [`q`]
+        xdot: [`qdot`]
+    """
     n = 3
-    # env = gym.make('nLink-reacher-acc-v0', n=n, dt=0.01)
     env = gym.make("nLink-reacher-vel-v0", render=True, n=n, dt=0.01)
     action = np.ones(n) * 8 * 0.01
     n_steps = 1000
@@ -27,12 +35,12 @@ def main():
         from examples.goal import (
             splineGoal,
         )
-
         env.add_goal(splineGoal)
     print("Starting episode")
-    for _ in range(n_steps):
+    for i in range(n_steps):
         ob, _, _, _ = env.step(action)
-        print(f"ob : {ob}")
+        if i % 100 == 0:
+            print(f"ob : {ob}")
 
 
 if __name__ == "__main__":
