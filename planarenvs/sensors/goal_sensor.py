@@ -4,13 +4,14 @@ import numpy as np
 
 
 class GoalSensor(Sensor):
-    def __init__(self, nb_goals=0, lim_sensor=10, mode="position"):
+    def __init__(self, forward_kinematics, nb_goals=0, lim_sensor=10, mode="position"):
         super().__init__(nb_observations=nb_goals, lim_sensor=lim_sensor)
         self._observation = (
             np.ones([self._nb_observations, 2]) * self._lim_sensor
         )
         self._mode = mode
         self.name = mode
+        self._forward_kinematics = forward_kinematics
 
     @Sensor.name.setter
     def name(self, mode):
@@ -35,8 +36,9 @@ class GoalSensor(Sensor):
                 if idx >= self._nb_observations:
                     break
                 goal_position = goal.position(t=t)
+                current_forward_kinematics = self._forward_kinematics(state['x'])
                 goal_distance = dist2circ(
-                    state["x"], goal_position, goal.epsilon()
+                    current_forward_kinematics, goal_position, goal.epsilon()
                 )
                 self._observation[idx] = goal_distance
 
