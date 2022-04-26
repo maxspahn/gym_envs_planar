@@ -3,15 +3,28 @@ import numpy as np
 from gym import spaces
 
 
-def dist2circ(
-    point_pos: np.ndarray, circle_pos: np.ndarray, circle_radius: float
+def vector_circle_to_point(
+    point_position: np.ndarray, circle_position: np.ndarray, circle_radius: float
 ) -> np.ndarray:
-    diff = point_pos - circle_pos
-    dist_to_center = np.linalg.norm(diff)
-    if dist_to_center < circle_radius:
+    distance_vector = point_position - circle_position
+    return distance_vector
+
+def dist2circ(point_position: np.ndarray, circle_position: np.ndarray, circle_radius: float) -> np.ndarray:
+    """
+    Computes normalized distance vector between point and circle.
+
+    Returns
+    ---------
+    np.ndarray:
+        (x_point - x_center) * |x_point - x_center|_2 - r_circle) / |x_point - x_center|_2
+    """
+    distance_vector = vector_circle_to_point(point_position, circle_position, circle_radius)
+    distance = np.linalg.norm(distance_vector)
+    if distance < circle_radius:
         return np.zeros(2)
-    diff = diff * (dist_to_center - circle_radius) / dist_to_center
-    return diff
+    distance_vector_normalized = distance_vector * (distance - circle_radius) / distance
+    return distance_vector_normalized
+
 
 
 class Sensor(ABC):
@@ -49,5 +62,5 @@ class Sensor(ABC):
         pass
 
     @abstractmethod
-    def sense(self, s, goals, obstacles, t=0):
+    def sense(self, state, goals, obstacles, t=0):
         pass

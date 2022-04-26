@@ -3,8 +3,11 @@ import gym
 import planarenvs.n_link_reacher #pylint: disable=unused-import
 import numpy as np
 
+from forwardkinematics.planarFks.planarArmFk import PlanarArmFk
+
 obstacles = True
 goal = True
+sensors = True
 
 
 def main():
@@ -18,6 +21,9 @@ def main():
         xdot: [`qdot`]
     """
     n = 3
+    fk = PlanarArmFk(n)
+    def forward_kinematics_planar_arm(q: np.ndarray):
+        return fk.fk(q, n, positionOnly=True)
     env = gym.make("nLink-reacher-vel-v0", render=True, n=n, dt=0.01)
     action = np.ones(n) * 8 * 0.01
     n_steps = 1000
@@ -36,6 +42,12 @@ def main():
             splineGoal,
         )
         env.add_goal(splineGoal)
+    if sensors:
+        from planarenvs.sensors.goal_sensor import (
+            GoalSensor,
+        )
+        goal_pos_observer = GoalSensor(forward_kinematics_planar_arm, nb_goals=1, mode="distance")
+        env.add_sensor(goal_pos_observer)
     print("Starting episode")
     for i in range(n_steps):
         ob, _, _, _ = env.step(action)

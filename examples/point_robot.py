@@ -34,6 +34,8 @@ def main():
         ObstaclePosition: positions of the obstacles
         ObstacleDistance: delta_x and delta_y to the obstacles
     """
+    def forward_kinematics_point_robot(q: np.ndarray):
+        return q
     env = gym.make("point-robot-vel-v0", render=True, dt=0.01)
     init_pos = np.array([0.0, -1.0])
     init_vel = np.array([-1.0, 0.0])
@@ -55,9 +57,9 @@ def main():
         env.add_sensor(obst_sensor_pos)
         obst_sensor_dist = ObstacleSensor(nb_obstacles=2, mode="distance")
         env.add_sensor(obst_sensor_dist)
-        goal_dist_observer = GoalSensor(nb_goals=1, mode="distance")
+        goal_dist_observer = GoalSensor(forward_kinematics_point_robot, nb_goals=1, mode="distance")
         env.add_sensor(goal_dist_observer)
-        goal_pos_observer = GoalSensor(nb_goals=1, mode="position")
+        goal_pos_observer = GoalSensor(forward_kinematics_point_robot, nb_goals=1, mode="position")
         env.add_sensor(goal_pos_observer)
 
     if obstacles:
