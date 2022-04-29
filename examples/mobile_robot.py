@@ -6,7 +6,7 @@ import numpy as np
 obstacles = False
 
 
-def main():
+def main(render=False):
     """
     Minimal example of mobile robot with (n-1) arm joints.
 
@@ -17,8 +17,8 @@ def main():
         x: [`x`, `q`]
         xdot: [`xdot`, `qdot`].
     """
-    n = 3
-    env = gym.make("mobile-robot-acc-v0", render=True, n=n, dt=0.01)
+    n = 4
+    env = gym.make("mobile-robot-acc-v0", render=render, n=n, dt=0.01)
     action = np.zeros(n)
     action[0] = 1.0
     action[3] = 1.0
@@ -39,4 +39,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(render=True)

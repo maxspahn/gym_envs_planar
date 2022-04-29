@@ -17,7 +17,7 @@ def time_variant_action(t):
     return np.array([np.cos(t), np.sin(t)])
 
 
-def main():
+def main(render=False):
     """
     Minimal example for point robot in the plane.
 
@@ -34,7 +34,7 @@ def main():
         ObstaclePosition: positions of the obstacles
         ObstacleDistance: delta_x and delta_y to the obstacles
     """
-    env = gym.make("point-robot-vel-v0", render=True, dt=0.01)
+    env = gym.make("point-robot-vel-v0", render=render, dt=0.01)
     init_pos = np.array([0.0, -1.0])
     init_vel = np.array([-1.0, 0.0])
     n_steps = 1000
@@ -88,4 +88,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(render=True)
