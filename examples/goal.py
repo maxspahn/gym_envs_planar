@@ -15,6 +15,19 @@ staticGoalDict = {
 }
 
 staticGoal = StaticSubGoal(name="goal1", contentDict=staticGoalDict)
+lineGoalDict = {
+    "m": 1,
+    "w": 1.0,
+    "prime": True,
+    "indices": [1],
+    "parent_link": 0,
+    "child_link": 3,
+    "desired_position": "x, 0.5 * x + 1",
+    "epsilon": 0.2,
+    "type": "staticSubGoal",
+}
+
+lineGoal = StaticSubGoal(name="goal2", contentDict=lineGoalDict)
 analyticGoalDict = {
     "m": 2,
     "w": 1.0,

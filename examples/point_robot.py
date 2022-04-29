@@ -75,9 +75,11 @@ def main(render=False):
     if goal:
         from examples.goal import (
             splineGoal,
+            lineGoal,
         )
 
         env.add_goal(splineGoal)
+        env.add_goal(lineGoal)
 
     print("Starting episode")
     for i in range(n_steps):
