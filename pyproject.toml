@@ -5,15 +5,16 @@ description = "Lightweight open-ai gym environments for planar kinematic chains.
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 
 [tool.poetry.dependencies]
-python = "^3.6.2,<3.11"
+python = ">=3.8,<3.11"
 gym = "^0.21.0"
-numpy = "^1.5.1"
-pyglet = "^1.5.21"
+numpy = "^1.19.0"
+pyglet = "1.5.23"
 scipy = "^1.5"
 casadi = "3.5.6.pre2"
 forwardkinematics = {git = "https://git@github.com/maxspahn/forwardKinematics.git", rev = "main"}
-motion-planning-scenes = {git= "https://git@github.com/maxspahn/motion_planning_scenes.git", rev = "main", optional = true}
+motion-planning-scenes = {git= "https://git@github.com/maxspahn/motion_planning_scenes.git", optional = false, rev = "4560575"}
 pylint = "^2.13.3"
+stable-baselines3 = "^1.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

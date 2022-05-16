@@ -155,7 +155,6 @@ class PlanarEnv(core.Env):
         from gym.envs.classic_control import (
             rendering,
         )  # pylint: disable=import-outside-toplevel
-
         if self._state is None:
             return None
         if self._viewer is None:
