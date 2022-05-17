@@ -3,7 +3,7 @@ import gym
 import planarenvs.n_link_reacher #pylint: disable=unused-import
 import numpy as np
 
-obstacles = True
+obstacles = False
 goal = True
 
 
@@ -20,7 +20,7 @@ def main():
     n = 3
     env = gym.make("nLink-reacher-vel-v0", render=True, n=n, dt=0.01)
     action = np.ones(n) * 8 * 0.01
-    n_steps = 1000
+    n_steps = 100000
     ob = env.reset(pos=np.random.rand(n))
     if obstacles:
         from examples.obstacles import (
@@ -33,14 +33,13 @@ def main():
         env.add_obstacle(dynamicSphereObst2)
     if goal:
         from examples.goal import (
-            splineGoal,
+            staticGoal,
         )
-        env.add_goal(splineGoal)
+        env.add_goal(staticGoal)
     print("Starting episode")
     for i in range(n_steps):
         ob, _, _, _ = env.step(action)
-        if i % 100 == 0:
-            print(f"ob : {ob}")
+        print(f"ob : {ob}")
 
 
 if __name__ == "__main__":

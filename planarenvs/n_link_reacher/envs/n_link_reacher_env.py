@@ -32,6 +32,7 @@ class NLinkReacherEnv(PlanarEnv):
         pass
 
     def _terminal(self):
+        print(self._limUpPos)
         return False
 
     def _reward(self):
