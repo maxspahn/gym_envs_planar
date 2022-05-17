@@ -32,11 +32,12 @@ class NLinkReacherEnv(PlanarEnv):
         pass
 
     def _terminal(self):
-        print(self._limUpPos)
+        goal = (0,0)
+        current_position = (0,0)
         return False
 
     def _reward(self):
-        reward = -1.0 if not self._terminal() else 0.0
+        reward = 1 if not self._terminal() else 0.0
         return reward
 
     @abstractmethod
