@@ -22,7 +22,8 @@ lineGoalDict = {
     "indices": [1],
     "parent_link": 0,
     "child_link": 3,
-    "desired_position": "x, 0.5 * x + 1",
+    "desired_position": [0.5],
+    "angle": 0.5,
     "epsilon": 0.2,
     "type": "staticSubGoal",
 }
