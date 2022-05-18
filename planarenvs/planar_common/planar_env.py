@@ -93,7 +93,6 @@ class PlanarEnv(core.Env):
         self._t = 0.0
 
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
-        self.reset_common()
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
             pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
@@ -113,7 +112,7 @@ class PlanarEnv(core.Env):
         reward = self._reward()
         if self._render:
             self.render()
-        return (self._get_ob(), reward, terminal, {})
+        return (self._get_ob(), np.float32(reward), terminal, {})
 
     @abstractmethod
     def _reward(self):

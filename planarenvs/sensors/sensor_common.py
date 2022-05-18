@@ -41,7 +41,7 @@ class Sensor(ABC):
             low=-self._lim_sensor,
             high=self._lim_sensor,
             shape=self.observation_size(),
-            dtype=np.float64,
+            dtype=np.float32,
         )
 
     @abstractmethod

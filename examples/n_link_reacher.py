@@ -19,7 +19,7 @@ def main():
         x: [`q`]
         xdot: [`qdot`]
     """
-    n = 3
+    n = 1
     env = gym.make("nLink-reacher-vel-v0", render=True, n=n, dt=0.01)
     if obstacles:
         from examples.obstacles import (
@@ -37,15 +37,19 @@ def main():
         env.add_goal(staticGoal)
     n_actions = env.action_space.shape[-1]
     action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-    env.reset(pos=np.random.rand(n))
-    model = DDPG("MlpPolicy", env, action_noise=action_noise, verbose=1)
+    model = DDPG("MultiInputPolicy", env, action_noise=action_noise, verbose=1)
     model.learn(total_timesteps=10000, log_interval=10)
-    model.save("ddpg_pendulum")
+    model.save("ddpg")
     env = model.get_env()
 
     action = np.ones(n) * 8 * 0.01
     n_steps = 100000
-    ob = env.reset(pos=np.random.rand(n))
+    ob = env.reset()
+    if goal:
+        from examples.goal import (
+            staticGoal,
+        )
+        env.add_goal(staticGoal)
     print("Starting episode")
     for i in range(n_steps):
         action, _states = model.predict(ob)
