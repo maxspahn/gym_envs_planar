@@ -19,7 +19,7 @@ def main():
         x: [`q`]
         xdot: [`qdot`]
     """
-    n = 1
+    n = 2
     env = gym.make("nLink-reacher-vel-v0", render=True, n=n, dt=0.01)
     if obstacles:
         from examples.obstacles import (

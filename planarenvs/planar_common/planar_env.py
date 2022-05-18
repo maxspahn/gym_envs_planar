@@ -93,6 +93,7 @@ class PlanarEnv(core.Env):
         self._t = 0.0
 
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
+        self._t = 0.0
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
             pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
