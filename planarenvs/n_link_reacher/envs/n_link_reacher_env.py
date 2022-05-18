@@ -1,7 +1,9 @@
+from matplotlib.cbook import ls_mapper
 import numpy as np
 from numpy import pi
 import time
 from abc import abstractmethod
+from scipy.spatial import distance
 
 from planarenvs.planar_common.planar_env import PlanarEnv
 from forwardkinematics.planarFks.planarArmFk import PlanarArmFk
@@ -32,12 +34,15 @@ class NLinkReacherEnv(PlanarEnv):
         pass
 
     def _terminal(self):
-        goal = (0,0)
-        current_position = (0,0)
         return False
 
     def _reward(self):
-        reward = 1 if not self._terminal() else 0.0
+        current_position = tuple(self._fk.numpy(self._state["x"],len(self._state["x"]),True))
+        goal_position = tuple(self._goals[0]._contentDict["desired_position"])
+        epsilon = self._goals[0]._contentDict["epsilon"]
+        gap = distance.euclidean(current_position,goal_position)
+        print(gap)
+        reward = 1.0 if gap <= epsilon else 0.0
         return reward
 
     @abstractmethod
