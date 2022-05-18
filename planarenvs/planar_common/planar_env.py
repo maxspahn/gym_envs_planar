@@ -44,7 +44,7 @@ class PlanarEnv(core.Env):
         self._obsts = []
         self._goals = []
         self._sensors = []
-        self._observation_space = None
+        self.observation_space = None
         self._n = None
 
     @property
@@ -78,10 +78,10 @@ class PlanarEnv(core.Env):
 
     def add_sensor(self, sensor):
         self._sensors.append(sensor)
-        observation_space_dict = dict(self._observation_space.spaces)
+        observation_space_dict = dict(self.observation_space.spaces)
         print(sensor.name)
         observation_space_dict[sensor.name] = sensor.observation_space()
-        self._observation_space = spaces.Dict(observation_space_dict)
+        self.observation_space = spaces.Dict(observation_space_dict)
 
     def t(self):
         return self._t
@@ -122,11 +122,11 @@ class PlanarEnv(core.Env):
     def _get_ob(self):
         observation = dict(self._state)
         observation.update(self._sensor_state)
-        if not self._observation_space.contains(observation):
+        if not self.observation_space.contains(observation):
             err = WrongObservationError(
                 "The observation does not fit the defined observation space",
                 observation,
-                self._observation_space,
+                self.observation_space,
             )
             warnings.warn(str(err))
         return observation
