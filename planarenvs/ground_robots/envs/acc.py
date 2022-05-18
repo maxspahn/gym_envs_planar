@@ -6,7 +6,7 @@ from planarenvs.ground_robots.envs.ground_robot_env import GroundRobotEnv
 
 class GroundRobotAccEnv(GroundRobotEnv):
     def set_spaces(self):
-        self._observation_space = spaces.Dict(
+        self.observation_space = spaces.Dict(
             {
                 "x": spaces.Box(
                     low=-self._limUpPos, high=self._limUpPos, dtype=np.float64

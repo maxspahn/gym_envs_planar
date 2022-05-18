@@ -4,7 +4,7 @@ from gym import spaces
 
 class VelEnv(object):
     def set_spaces(self):
-        self._observation_space = spaces.Dict(
+        self.observation_space = spaces.Dict(
             {
                 "x": spaces.Box(
                     low=-self._limUpPos, high=self._limUpPos, dtype=np.float64
