@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from cgitb import reset
 import numpy as np
 from scipy.integrate import odeint
 import warnings
@@ -46,6 +47,7 @@ class PlanarEnv(core.Env):
         self._sensors = []
         self.observation_space = None
         self._n = None
+        self._step_count = 0
 
     @property
     def n(self):
@@ -88,12 +90,12 @@ class PlanarEnv(core.Env):
 
     def reset_common(self):
         self._obsts = []
-        self._goals = []
         self._sensors = []
         self._t = 0.0
+        self._step_count = 0
 
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
-        self._t = 0.0
+        self.reset_common()
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
             pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
@@ -103,17 +105,19 @@ class PlanarEnv(core.Env):
         return self._get_ob()
 
     def step(self, action: np.ndarray) -> tuple:
+
         self._action = action
         self.integrate()
         for sensor in self._sensors:
             self._sensor_state[sensor.name] = sensor.sense(
                 self._state, self._goals, self._obsts, self.t()
             )
+        self._ob = self._get_ob()
         terminal = self._terminal()
         reward = self._reward()
         if self._render:
             self.render()
-        return (self._get_ob(), np.float32(reward), terminal, {})
+        return (self._ob, np.float32(reward), terminal, {})
 
     @abstractmethod
     def _reward(self):
@@ -128,6 +132,7 @@ class PlanarEnv(core.Env):
                 observation,
                 self.observation_space,
             )
+            print("error")
             warnings.warn(str(err))
         return observation
 
@@ -144,8 +149,8 @@ class PlanarEnv(core.Env):
         t = np.arange(0, 2 * self._dt, self._dt)
         x0 = np.concatenate((self._state["x"], self._state["xdot"]))
         ynext = odeint(self.continuous_dynamics, x0, t)
-        self._state["x"] = ynext[1][0 : self._n]
-        self._state["xdot"] = ynext[1][self._n : 2 * self._n]
+        self._state["x"] = ynext[1][0: self._n]
+        self._state["xdot"] = ynext[1][self._n: 2 * self._n]
 
     @abstractmethod
     def render(self, mode="human"):

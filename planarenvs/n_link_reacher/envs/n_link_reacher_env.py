@@ -38,17 +38,13 @@ class NLinkReacherEnv(PlanarEnv):
         goal_position = tuple(self._goals[0]._contentDict["desired_position"])
         epsilon = self._goals[0]._contentDict["epsilon"]
         gap = distance.euclidean(current_position,goal_position)
-        observation = dict(self._state)
-        observation.update(self._sensor_state)
         return gap <= epsilon
 
     def _reward(self):
         current_position = tuple(self._fk.numpy(self._state["x"],len(self._state["x"]),True))
         goal_position = tuple(self._goals[0]._contentDict["desired_position"])
         epsilon = self._goals[0]._contentDict["epsilon"]
-        observation = dict(self._state)
-        observation.update(self._sensor_state)
-        if not self.observation_space.contains(observation):
+        if not self.observation_space.contains(self._ob):
             return -10
         gap = distance.euclidean(current_position,goal_position)
         reward = 10 if gap <= epsilon else 0.0
