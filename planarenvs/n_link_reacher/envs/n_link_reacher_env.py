@@ -40,8 +40,6 @@ class NLinkReacherEnv(PlanarEnv):
         gap = distance.euclidean(current_position,goal_position)
         observation = dict(self._state)
         observation.update(self._sensor_state)
-        if not self.observation_space.contains(observation):
-            return True
         return gap <= epsilon
 
     def _reward(self):
