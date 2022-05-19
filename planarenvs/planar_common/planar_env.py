@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from cgitb import reset
 import numpy as np
 from scipy.integrate import odeint
 import warnings
@@ -45,9 +44,8 @@ class PlanarEnv(core.Env):
         self._obsts = []
         self._goals = []
         self._sensors = []
-        self.observation_space = None
+        self._observation_space = None
         self._n = None
-        self._step_count = 0
 
     @property
     def n(self):
@@ -80,10 +78,10 @@ class PlanarEnv(core.Env):
 
     def add_sensor(self, sensor):
         self._sensors.append(sensor)
-        observation_space_dict = dict(self.observation_space.spaces)
+        observation_space_dict = dict(self._observation_space.spaces)
         print(sensor.name)
         observation_space_dict[sensor.name] = sensor.observation_space()
-        self.observation_space = spaces.Dict(observation_space_dict)
+        self._observation_space = spaces.Dict(observation_space_dict)
 
     def t(self):
         return self._t
@@ -92,7 +90,6 @@ class PlanarEnv(core.Env):
         self._obsts = []
         self._sensors = []
         self._t = 0.0
-        self._step_count = 0
 
     def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
         self.reset_common()
@@ -125,14 +122,14 @@ class PlanarEnv(core.Env):
     def _get_ob(self):
         observation = dict(self._state)
         observation.update(self._sensor_state)
-        print(observation["x"].dtype)
+        for key in observation:
+            observation[key] = observation[key].astype(np.float32)
         if not self.observation_space.contains(observation):
             err = WrongObservationError(
                 "The observation does not fit the defined observation space",
                 observation,
-                self.observation_space,
+                self._observation_space,
             )
-            print("error")
             warnings.warn(str(err))
         return observation
 
@@ -149,8 +146,8 @@ class PlanarEnv(core.Env):
         t = np.arange(0, 2 * self._dt, self._dt)
         x0 = np.concatenate((self._state["x"], self._state["xdot"]))
         ynext = odeint(self.continuous_dynamics, x0, t)
-        self._state["x"] = ynext[1][0: self._n].astype(np.float32)
-        self._state["xdot"] = ynext[1][self._n: 2 * self._n].astype(np.float32)
+        self._state["x"] = ynext[1][0 : self._n]
+        self._state["xdot"] = ynext[1][self._n : 2 * self._n]
 
     @abstractmethod
     def render(self, mode="human"):
@@ -160,6 +157,7 @@ class PlanarEnv(core.Env):
         from gym.envs.classic_control import (
             rendering,
         )  # pylint: disable=import-outside-toplevel
+
         if self._state is None:
             return None
         if self._viewer is None:
