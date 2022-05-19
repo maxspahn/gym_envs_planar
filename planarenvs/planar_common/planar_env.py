@@ -105,7 +105,6 @@ class PlanarEnv(core.Env):
         return self._get_ob()
 
     def step(self, action: np.ndarray) -> tuple:
-
         self._action = action
         self.integrate()
         for sensor in self._sensors:
@@ -117,7 +116,7 @@ class PlanarEnv(core.Env):
         reward = self._reward()
         if self._render:
             self.render()
-        return (self._ob, np.float32(reward), terminal, {})
+        return (self._ob, reward, terminal, {})
 
     @abstractmethod
     def _reward(self):
@@ -126,6 +125,7 @@ class PlanarEnv(core.Env):
     def _get_ob(self):
         observation = dict(self._state)
         observation.update(self._sensor_state)
+        print(observation["x"].dtype)
         if not self.observation_space.contains(observation):
             err = WrongObservationError(
                 "The observation does not fit the defined observation space",
@@ -149,8 +149,8 @@ class PlanarEnv(core.Env):
         t = np.arange(0, 2 * self._dt, self._dt)
         x0 = np.concatenate((self._state["x"], self._state["xdot"]))
         ynext = odeint(self.continuous_dynamics, x0, t)
-        self._state["x"] = ynext[1][0: self._n]
-        self._state["xdot"] = ynext[1][self._n: 2 * self._n]
+        self._state["x"] = ynext[1][0: self._n].astype(np.float32)
+        self._state["xdot"] = ynext[1][self._n: 2 * self._n].astype(np.float32)
 
     @abstractmethod
     def render(self, mode="human"):

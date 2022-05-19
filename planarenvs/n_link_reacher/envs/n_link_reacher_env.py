@@ -1,6 +1,6 @@
 from matplotlib.cbook import ls_mapper
 import numpy as np
-from numpy import pi
+from numpy import float32, pi
 import time
 from abc import abstractmethod
 from scipy.spatial import distance
@@ -22,10 +22,10 @@ class NLinkReacherEnv(PlanarEnv):
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
         self.n = n
-        self._limUpPos = np.ones(self._n) * self.MAX_POS
-        self._limUpVel = np.ones(self._n) * self.MAX_VEL
-        self._limUpAcc = np.ones(self._n) * self.MAX_ACC
-        self._limUpTor = np.ones(self._n) * self.MAX_TOR
+        self._limUpPos = np.ones(self._n, dtype=float32) * self.MAX_POS
+        self._limUpVel = np.ones(self._n, dtype=float32) * self.MAX_VEL
+        self._limUpAcc = np.ones(self._n, dtype=float32) * self.MAX_ACC
+        self._limUpTor = np.ones(self._n, dtype=float32) * self.MAX_TOR
         self.set_spaces()
         self._fk = PlanarArmFk(self._n)
 
@@ -34,19 +34,21 @@ class NLinkReacherEnv(PlanarEnv):
         pass
 
     def _terminal(self):
-        current_position = tuple(self._fk.numpy(self._state["x"],len(self._state["x"]),True))
+        current_position = tuple(self._fk.numpy(
+            self._state["x"], len(self._state["x"]), True))
         goal_position = tuple(self._goals[0]._contentDict["desired_position"])
         epsilon = self._goals[0]._contentDict["epsilon"]
-        gap = distance.euclidean(current_position,goal_position)
+        gap = distance.euclidean(current_position, goal_position)
         return gap <= epsilon
 
     def _reward(self):
-        current_position = tuple(self._fk.numpy(self._state["x"],len(self._state["x"]),True))
+        current_position = tuple(self._fk.numpy(
+            self._state["x"], len(self._state["x"]), True))
         goal_position = tuple(self._goals[0]._contentDict["desired_position"])
         epsilon = self._goals[0]._contentDict["epsilon"]
         if not self.observation_space.contains(self._ob):
             return -10
-        gap = distance.euclidean(current_position,goal_position)
+        gap = distance.euclidean(current_position, goal_position)
         reward = 10 if gap <= epsilon else 0.0
         return reward
 
@@ -69,7 +71,7 @@ class NLinkReacherEnv(PlanarEnv):
         return self._viewer.render(return_rgb_array=mode == "rgb_array")
 
     def render_base(self):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
+        from gym.envs.classic_control import rendering  # pylint: disable=import-outside-toplevel
 
         base = self._viewer.draw_polygon(
             [(-0.2, 0), (0.0, 0.2), (0.2, 0), (-0.2, 0)]
@@ -78,7 +80,7 @@ class NLinkReacherEnv(PlanarEnv):
         base.add_attr(tf0)
 
     def render_link(self, i):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
+        from gym.envs.classic_control import rendering  # pylint: disable=import-outside-toplevel
 
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
         fk = self._fk.fk(self._state["x"], i)
@@ -91,7 +93,7 @@ class NLinkReacherEnv(PlanarEnv):
         joint.add_attr(tf)
 
     def render_end_effector(self):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
+        from gym.envs.classic_control import rendering  # pylint: disable=import-outside-toplevel
 
         fk = self._fk.fk(self._state["x"], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
