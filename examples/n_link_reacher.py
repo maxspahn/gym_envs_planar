@@ -3,7 +3,7 @@ import gym
 import planarenvs.n_link_reacher #pylint: disable=unused-import
 import numpy as np
 
-from stable_baselines3 import DDPG
+from stable_baselines3 import DDPG, SAC
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 obstacles = False
 goal = True
@@ -36,9 +36,9 @@ def main():
         )
         env.add_goal(staticGoal)
     n_actions = env.action_space.shape[-1]
-    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-    model = DDPG("MultiInputPolicy", env, action_noise=action_noise, verbose=1)
-    model.learn(total_timesteps=10000, log_interval=10)
+    action_noise = NormalActionNoise(mean=0.1 * np.ones(n_actions), sigma=0.2 * np.ones(n_actions))
+    model = SAC("MultiInputPolicy", env, verbose=1,learning_rate=0.001)
+    model.learn(total_timesteps=100000, log_interval=10)
     model.save("ddpg")
     env = model.get_env()
 

@@ -17,7 +17,7 @@ class NLinkReacherEnv(PlanarEnv):
     MAX_VEL = 4 * pi
     MAX_POS = pi
     MAX_ACC = 9 * pi
-    MAX_TOR = 1000
+    MAX_TOR = 0.1
 
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
@@ -39,6 +39,8 @@ class NLinkReacherEnv(PlanarEnv):
         goal_position = tuple(self._goals[0]._contentDict["desired_position"])
         epsilon = self._goals[0]._contentDict["epsilon"]
         gap = distance.euclidean(current_position, goal_position)
+        if self._emergency_stop:
+            return True
         return gap <= epsilon
 
     def _reward(self):
@@ -46,10 +48,10 @@ class NLinkReacherEnv(PlanarEnv):
             self._state["x"], len(self._state["x"]), True))
         goal_position = tuple(self._goals[0]._contentDict["desired_position"])
         epsilon = self._goals[0]._contentDict["epsilon"]
-        if not self.observation_space.contains(self._ob):
+        if self._emergency_stop:
             return -10
         gap = distance.euclidean(current_position, goal_position)
-        reward = 10 if gap <= epsilon else 0.0
+        reward = 1 if gap <= epsilon else 0.0
         return reward
 
     @abstractmethod

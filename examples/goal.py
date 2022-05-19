@@ -9,8 +9,8 @@ staticGoalDict = {
     "indices": [0, 1],
     "parent_link": 0,
     "child_link": 3,
-    "desired_position": [1, 1],
-    "epsilon": 0.2,
+    "desired_position": [0 ,1.5],
+    "epsilon": 0.3,
     "type": "staticSubGoal",
 }
 
