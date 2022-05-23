@@ -1,13 +1,15 @@
-#pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel
 import gym
-import planarenvs.n_link_reacher #pylint: disable=unused-import
+import planarenvs.n_link_reacher  # pylint: disable=unused-import
 import numpy as np
 
-obstacles = True
-goal = True
 
-
-def main():
+def run_n_link_reacher(
+    n_steps=1000,
+    render: bool = True,
+    goal: bool = False,
+    obstacles: bool = False,
+):
     """
     Minimal example for n-link planar robot arm.
 
@@ -18,9 +20,8 @@ def main():
         xdot: [`qdot`]
     """
     n = 3
-    env = gym.make("nLink-reacher-vel-v0", render=True, n=n, dt=0.01)
+    env = gym.make("nLink-reacher-vel-v0", render=render, n=n, dt=0.01)
     action = np.ones(n) * 8 * 0.01
-    n_steps = 1000
     ob = env.reset(pos=np.random.rand(n))
     if obstacles:
         from examples.obstacles import (
@@ -28,6 +29,7 @@ def main():
             sphereObst2,
             dynamicSphereObst2,
         )
+
         env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
         env.add_obstacle(dynamicSphereObst2)
@@ -35,13 +37,19 @@ def main():
         from examples.goal import (
             splineGoal,
         )
+
         env.add_goal(splineGoal)
     print("Starting episode")
+    observation_history = []
     for i in range(n_steps):
         ob, _, _, _ = env.step(action)
+        observation_history.append(ob)
         if i % 100 == 0:
             print(f"ob : {ob}")
+    return observation_history
 
 
 if __name__ == "__main__":
-    main()
+    obstacles = True
+    goal = True
+    run_n_link_reacher(goal=goal, obstacles=obstacles)

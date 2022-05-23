@@ -1,6 +1,6 @@
-#pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel
 import gym
-import planarenvs.ground_robots # pylint: disable=unused-import
+import planarenvs.ground_robots  # pylint: disable=unused-import
 import numpy as np
 
 obstacles = True
