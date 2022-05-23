@@ -1,6 +1,6 @@
-#pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel
 import gym
-import planarenvs.point_robot #pylint: disable=unused-import
+import planarenvs.point_robot  # pylint: disable=unused-import
 import numpy as np
 
 # This example showcases the psedo-sensor and requires goals and obstacles.
@@ -9,15 +9,16 @@ import numpy as np
 # Consider installing it with `poetry install -E scenes`.
 
 
-obstacles = True
-goal = True
-sensors = True
-
 def time_variant_action(t):
     return np.array([np.cos(t), np.sin(t)])
 
 
-def main(render=False):
+def run_point_robot(
+    n_steps: int = 1000,
+    render: bool = False,
+    goal: bool = False,
+    obstacles: bool = False,
+):
     """
     Minimal example for point robot in the plane.
 
@@ -37,12 +38,11 @@ def main(render=False):
     env = gym.make("point-robot-vel-v0", render=render, dt=0.01)
     init_pos = np.array([0.0, -1.0])
     init_vel = np.array([-1.0, 0.0])
-    n_steps = 1000
     ob = env.reset(pos=init_pos, vel=init_vel)
     env.reset_limits(
         pos={"high": np.array([2.0, 3.0]), "low": np.array([-2.0, -3.0])}
     )
-
+    sensors = True
     if sensors:
         from planarenvs.sensors.goal_sensor import (
             GoalSensor,
@@ -82,12 +82,17 @@ def main(render=False):
         env.add_goal(lineGoal)
 
     print("Starting episode")
+    observation_history = []
     for i in range(n_steps):
         action = time_variant_action(env.t())
         ob, _, _, _ = env.step(action)
+        observation_history.append(ob)
         if i % 100 == 0:
             print(f"ob : {ob}")
+    return observation_history
 
 
 if __name__ == "__main__":
-    main(render=True)
+    obstacles = True
+    goal = True
+    run_point_robot(render=True, obstacles=obstacles, goal=goal)

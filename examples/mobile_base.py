@@ -25,6 +25,7 @@ def main():
             sphereObst1,
             sphereObst2,
         )
+
         env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
     print("Starting episode")

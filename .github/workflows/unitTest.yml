@@ -55,11 +55,11 @@ jobs:
       # install your root project, if required
       #----------------------------------------------
       - name: Install library
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --extras scenes
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
       # Runs a set of commands using the runners shell
       - name: Run pytest
-        run: PYTHONPATH=src/ poetry run python -m pytest tests/
+        run: PYTHONPATH=src/ poetry run python -m pytest
 

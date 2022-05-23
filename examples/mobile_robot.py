@@ -3,10 +3,10 @@ import gym
 import planarenvs.mobile_robot  # pylint: disable=unused-import
 import numpy as np
 
-obstacles = False
 
-
-def main(render=False):
+def run_mobile_robot(
+    n_steps=1000, render=False, goal: bool = False, obstacles: bool = False
+):
     """
     Minimal example of mobile robot with (n-1) arm joints.
 
@@ -22,21 +22,25 @@ def main(render=False):
     action = np.zeros(n)
     action[0] = 1.0
     action[3] = 1.0
-    n_steps = 1000
     ob = env.reset(pos=np.random.rand(n))
     if obstacles:
         from examples.obstacles import (
             sphereObst1,
             sphereObst2,
         )
+
         env.add_obstacle(sphereObst1)
         env.add_obstacle(sphereObst2)
     print("Starting episode")
+    observation_history = []
     for i in range(n_steps):
         ob, _, _, _ = env.step(action)
+        observation_history.append(ob)
         if i % 100 == 0:
             print(f"ob : {ob}")
+    return observation_history
 
 
 if __name__ == "__main__":
-    main(render=True)
+    obstacles = False
+    run_mobile_robot(n_steps=1000, render=True, obstacles=obstacles)
