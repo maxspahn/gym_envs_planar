@@ -57,10 +57,10 @@ class PointRobotEnv(PlanarEnv):
         self._limUpAcc = self._limits["acc"]["high"]
         self._limUpFor = self._limits["for"]["high"]
         self.observation_space.spaces["x"] = spaces.Box(
-            low=-self._limUpPos, high=self._limUpPos, dtype=np.float64
+            low=-self._limUpPos, high=self._limUpPos, dtype=np.float32
         )
         self.observation_space.spaces["xdot"] = spaces.Box(
-            low=-self._limUpVel, high=self._limUpVel, dtype=np.float64
+            low=-self._limUpVel, high=self._limUpVel, dtype=np.float32
         )
 
     @abstractmethod

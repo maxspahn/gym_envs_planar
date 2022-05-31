@@ -1,8 +1,8 @@
 import numpy as np
-from numpy import pi
+from numpy import float32, pi
 import time
 from abc import abstractmethod
-
+from scipy.spatial import distance
 from planarenvs.planar_common.planar_env import PlanarEnv
 from forwardkinematics.planarFks.planarArmFk import PlanarArmFk
 
@@ -32,11 +32,26 @@ class NLinkReacherEnv(PlanarEnv):
         pass
 
     def _terminal(self):
-        return False
+        current_position = tuple(self._fk.numpy(
+            self._state["x"], len(self._state["x"]), True))
+        goal_position = tuple(self._goals[0]._contentDict["desired_position"])
+        epsilon = self._goals[0]._contentDict["epsilon"]
+        gap = distance.euclidean(current_position, goal_position)
+        if self._emergency_stop:
+            return True
+        return gap <= epsilon
 
     def _reward(self):
-        reward = -1.0 if not self._terminal() else 0.0
+        current_position = tuple(self._fk.numpy(
+        self._state["x"], len(self._state["x"]), True))
+        goal_position = tuple(self._goals[0]._contentDict["desired_position"])
+        epsilon = self._goals[0]._contentDict["epsilon"]
+        if self._emergency_stop:
+            return -10
+        gap = distance.euclidean(current_position, goal_position)
+        reward = 1 if gap <= epsilon else 0.0
         return reward
+
 
     @abstractmethod
     def continuous_dynamics(self, x, t):

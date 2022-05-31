@@ -129,7 +129,7 @@ graph = ["objgraph (>=1.7.2)"]
 
 [[package]]
 name = "forwardkinematics"
-version = "1.0.0"
+version = "1.0.1"
 description = "\"Light-weight implementation of forward kinematics using casadi.\""
 category = "main"
 optional = false
@@ -144,8 +144,8 @@ urdf_parser_py = ">=0.0.3"
 [package.source]
 type = "git"
 url = "https://git@github.com/maxspahn/forwardKinematics.git"
-reference = "release-1.0.0"
-resolved_reference = "e2ee7c85d8438bcc306b97f4c463e883627a896f"
+reference = "release-1.0"
+resolved_reference = "54f58d81c7fc105527d9d81ea5789b02989d8d63"
 
 [[package]]
 name = "geomdl"
@@ -523,7 +523,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2,<3.11"
-content-hash = "8704a006affdbaae2e72a83ce0abfe36c1edd1adde78250d37c2e6d6f1e47402"
+content-hash = "252ca772c8ed7e16e3a67ef8d340618da12cfcc5e99bd582c575c271f2cf0078"
 
 [metadata.files]
 astroid = [
