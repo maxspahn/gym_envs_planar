@@ -20,10 +20,10 @@ class NLinkReacherEnv(PlanarEnv):
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
         self.n = n
-        self._limUpPos = np.ones(self._n) * self.MAX_POS
-        self._limUpVel = np.ones(self._n) * self.MAX_VEL
-        self._limUpAcc = np.ones(self._n) * self.MAX_ACC
-        self._limUpTor = np.ones(self._n) * self.MAX_TOR
+        self._lim_up_pos = np.ones(self._n) * self.MAX_POS
+        self._lim_up_vel = np.ones(self._n) * self.MAX_VEL
+        self._lim_up_acc = np.ones(self._n) * self.MAX_ACC
+        self._lim_up_tor = np.ones(self._n) * self.MAX_TOR
         self.set_spaces()
         self._fk = PlanarArmFk(self._n)
 
