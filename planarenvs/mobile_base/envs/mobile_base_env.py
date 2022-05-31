@@ -19,10 +19,10 @@ class MobileBaseEnv(PlanarEnv):
     def __init__(self, render=False, dt=0.01):
         super().__init__(render=render, dt=dt)
         self.n = 1
-        self._limUpPos = np.ones(self._n) * self.MAX_POS
-        self._limUpVel = np.ones(self._n) * self.MAX_VEL
-        self._limUpAcc = np.ones(self._n) * self.MAX_ACC
-        self._limUpFor = np.ones(self._n) * self.MAX_FOR
+        self._lim_up_pos = np.ones(self._n) * self.MAX_POS
+        self._lim_up_vel = np.ones(self._n) * self.MAX_VEL
+        self._lim_up_acc = np.ones(self._n) * self.MAX_ACC
+        self._lim_up_for = np.ones(self._n) * self.MAX_FOR
         self.set_spaces()
 
     @abstractmethod

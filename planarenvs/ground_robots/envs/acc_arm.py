@@ -9,29 +9,33 @@ class GroundRobotArmAccEnv(GroundRobotArmEnv):
         self.observation_space = spaces.Dict(
             {
                 "x": spaces.Box(
-                    low=-self._limUpPos, high=self._limUpPos, dtype=np.float64
+                    low=-self._lim_up_pos,
+                    high=self._lim_up_pos,
+                    dtype=np.float64
                 ),
                 "q": spaces.Box(
-                    low=-self._limUpArmPos,
-                    high=self._limUpArmPos,
+                    low=-self._lim_up_arm_pos,
+                    high=self._lim_up_arm_pos,
                     dtype=np.float64,
                 ),
                 "xdot": spaces.Box(
-                    low=-self._limUpVel, high=self._limUpVel, dtype=np.float64
+                    low=-self._lim_up_vel,
+                    high=self._lim_up_vel,
+                    dtype=np.float64
                 ),
                 "vel": spaces.Box(
-                    low=-self._limUpRelVel,
-                    high=self._limUpRelVel,
+                    low=-self._lim_up_rel_vel,
+                    high=self._lim_up_rel_vel,
                     dtype=np.float64,
                 ),
                 "qdot": spaces.Box(
-                    low=-self._limUpArmVel,
-                    high=self._limUpArmVel,
+                    low=-self._lim_up_arm_vel,
+                    high=self._lim_up_arm_vel,
                     dtype=np.float64,
                 ),
             }
         )
-        a = np.concatenate((self._limUpRelAcc, self._limUpArmAcc))
+        a = np.concatenate((self._lim_up_rel_acc, self._lim_up_arm_acc))
         self.action_space = spaces.Box(low=-a, high=a, dtype=np.float64)
 
     def continuous_dynamics(self, x, t):

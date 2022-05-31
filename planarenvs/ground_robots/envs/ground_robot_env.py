@@ -24,19 +24,19 @@ class GroundRobotEnv(PlanarEnv):
 
     def __init__(self, render=False, dt=0.01):
         super().__init__(render=render, dt=dt)
-        self._limUpPos = np.array(
+        self._lim_up_pos = np.array(
             [self.MAX_POS_BASE, self.MAX_POS_BASE, self.MAX_POS_BASE_THETA]
         )
-        self._limUpVel = np.array(
+        self._lim_up_vel = np.array(
             [self.MAX_VEL_BASE, self.MAX_VEL_BASE, self.MAX_VEL_BASE_THETA]
         )
-        self._limUpRelVel = np.array(
+        self._lim_up_rel_vel = np.array(
             [self.MAX_VEL_FORWARD, self.MAX_VEL_BASE_THETA]
         )
-        self._limUpAcc = np.array(
+        self._lim_up_acc = np.array(
             [self.MAX_ACC_BASE, self.MAX_ACC_BASE, self.MAX_ACC_BASE_THETA]
         )
-        self._limUpRelAcc = np.array(
+        self._lim_up_rel_acc = np.array(
             [self.MAX_ACC_FORWARD, self.MAX_ACC_BASE_THETA]
         )
         self.set_spaces()

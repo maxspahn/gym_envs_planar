@@ -13,9 +13,9 @@ class GroundRobotArmEnv(GroundRobotEnv):
 
     def __init__(self, render=False, dt=0.01, n_arm=1):
         self._n_arm = n_arm
-        self._limUpArmPos = np.ones(self._n_arm) * self.MAX_ARM_POS
-        self._limUpArmVel = np.ones(self._n_arm) * self.MAX_ARM_VEL
-        self._limUpArmAcc = np.ones(self._n_arm) * self.MAX_ARM_ACC
+        self._lim_up_arm_pos = np.ones(self._n_arm) * self.MAX_ARM_POS
+        self._lim_up_arm_vel = np.ones(self._n_arm) * self.MAX_ARM_VEL
+        self._lim_up_arm_acc = np.ones(self._n_arm) * self.MAX_ARM_ACC
         super().__init__(render=render, dt=dt)
 
     def integrate(self):

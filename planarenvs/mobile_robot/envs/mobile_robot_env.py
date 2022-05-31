@@ -25,16 +25,16 @@ class MobileRobotEnv(PlanarEnv):
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
         self.n = n
-        self._limUpPos = self.join_limits(
+        self._lim_up_pos = self.join_limits(
             np.array([self.MAX_POS_BASE]), np.ones(self._n - 1) * self.MAX_POS
         )
-        self._limUpVel = self.join_limits(
+        self._lim_up_vel = self.join_limits(
             np.array([self.MAX_VEL_BASE]), np.ones(self._n - 1) * self.MAX_VEL
         )
-        self._limUpAcc = self.join_limits(
+        self._lim_up_acc = self.join_limits(
             np.array([self.MAX_ACC_BASE]), np.ones(self._n - 1) * self.MAX_ACC
         )
-        self._limUpTor = self.join_limits(
+        self._lim_up_tor = self.join_limits(
             np.array([self.MAX_FOR_BASE]), np.ones(self._n - 1) * self.MAX_TOR
         )
         self.set_spaces()

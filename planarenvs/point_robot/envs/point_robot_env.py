@@ -35,10 +35,10 @@ class PointRobotEnv(PlanarEnv):
                 "low": np.ones(self._n) * -self.MAX_FOR,
             },
         }
-        self._limUpPos = self._limits["pos"]["high"]
-        self._limUpVel = self._limits["vel"]["high"]
-        self._limUpAcc = self._limits["acc"]["high"]
-        self._limUpFor = self._limits["for"]["high"]
+        self._lim_up_pos = self._limits["pos"]["high"]
+        self._lim_up_vel = self._limits["vel"]["high"]
+        self._lim_up_acc = self._limits["acc"]["high"]
+        self._lim_up_for = self._limits["for"]["high"]
         self.set_spaces()
 
     def reset_limits(self, **kwargs):
@@ -52,15 +52,15 @@ class PointRobotEnv(PlanarEnv):
                         "%s", "Incorrect size of limit." + "Resizing ignored."
                     )
 
-        self._limUpPos = self._limits["pos"]["high"]
-        self._limUpVel = self._limits["vel"]["high"]
-        self._limUpAcc = self._limits["acc"]["high"]
-        self._limUpFor = self._limits["for"]["high"]
+        self._lim_up_pos = self._limits["pos"]["high"]
+        self._lim_up_vel = self._limits["vel"]["high"]
+        self._lim_up_acc = self._limits["acc"]["high"]
+        self._lim_up_for = self._limits["for"]["high"]
         self.observation_space.spaces["x"] = spaces.Box(
-            low=-self._limUpPos, high=self._limUpPos, dtype=np.float64
+            low=-self._lim_up_pos, high=self._lim_up_pos, dtype=np.float64
         )
         self.observation_space.spaces["xdot"] = spaces.Box(
-            low=-self._limUpVel, high=self._limUpVel, dtype=np.float64
+            low=-self._lim_up_vel, high=self._lim_up_vel, dtype=np.float64
         )
 
     @abstractmethod
