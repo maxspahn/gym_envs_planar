@@ -133,26 +133,19 @@ version = "1.0.1"
 description = "\"Light-weight implementation of forward kinematics using casadi.\""
 category = "main"
 optional = false
-python-versions = "^3.6.2,<3.11"
-develop = false
+python-versions = ">=3.6.2,<3.11"
 
 [package.dependencies]
 casadi = "3.5.6.pre2"
-numpy = "^1.15.5"
+numpy = ">=1.15.5,<2.0.0"
 urdf_parser_py = ">=0.0.3"
-
-[package.source]
-type = "git"
-url = "https://git@github.com/maxspahn/forwardKinematics.git"
-reference = "release-1.0"
-resolved_reference = "54f58d81c7fc105527d9d81ea5789b02989d8d63"
 
 [[package]]
 name = "geomdl"
 version = "5.3.1"
 description = "Object-oriented B-Spline and NURBS evaluation library"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -254,23 +247,16 @@ name = "motion-planning-scenes"
 version = "0.1.19"
 description = "Generic motion planning scenes, including goals and obstacles."
 category = "main"
-optional = true
-python-versions = "^3.6"
-develop = false
+optional = false
+python-versions = ">=3.6,<4.0"
 
 [package.dependencies]
 casadi = "3.5.6.pre2"
-geomdl = "^5.3.1"
-numpy = "^1.19.0"
-pyquaternion = "^0.9.9"
-pytest = "^6.2.5"
-PyYAML = "^6.0"
-
-[package.source]
-type = "git"
-url = "https://git@github.com/maxspahn/motion_planning_scenes.git"
-reference = "main"
-resolved_reference = "0544c65692e4c41671b35202bf8de3ca0b723d62"
+geomdl = ">=5.3.1,<6.0.0"
+numpy = ">=1.19.0,<2.0.0"
+pyquaternion = ">=0.9.9,<0.10.0"
+pytest = ">=6.2.5,<7.0.0"
+PyYAML = ">=6.0,<7.0"
 
 [[package]]
 name = "mypy-extensions"
@@ -387,7 +373,7 @@ name = "pyquaternion"
 version = "0.9.9"
 description = "A fully featured, pythonic library for representing and using quaternions."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -523,7 +509,7 @@ scenes = ["motion-planning-scenes"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2,<3.11"
-content-hash = "252ca772c8ed7e16e3a67ef8d340618da12cfcc5e99bd582c575c271f2cf0078"
+content-hash = "d8d007274b59a9460d0aac1db5d77c0806a7addaeb40b2a2595d887d6cab2a3c"
 
 [metadata.files]
 astroid = [
@@ -647,7 +633,10 @@ dill = [
     {file = "dill-0.3.4-py2.py3-none-any.whl", hash = "sha256:7e40e4a70304fd9ceab3535d36e58791d9c4a776b38ec7f7ec9afc8d3dca4d4f"},
     {file = "dill-0.3.4.zip", hash = "sha256:9f9734205146b2b353ab3fec9af0070237b6ddae78452af83d2fca84d739e675"},
 ]
-forwardkinematics = []
+forwardkinematics = [
+    {file = "forwardkinematics-1.0.1-py3-none-any.whl", hash = "sha256:b0dd4bcf24f59f47d79faf40c2c1839fe0d9c9fbc0bc58be5e5ee139e87e78df"},
+    {file = "forwardkinematics-1.0.1.tar.gz", hash = "sha256:ffe9e0c1f6329a6a7a8ecdf416080e74fd9107d833ff6480b080ec4bd5fba7b3"},
+]
 geomdl = [
     {file = "geomdl-5.3.1-py2.py3-none-any.whl", hash = "sha256:0f36a4bacde5b218c73aadc69ff152e7f7fb3aa7260df0e6647a701a5351d76a"},
     {file = "geomdl-5.3.1.tar.gz", hash = "sha256:e81a31b4d5f111267b16045ba1d9539235a98b2cff5e4bad18f7ddcd4cb804c8"},
@@ -775,7 +764,10 @@ mccabe = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
-motion-planning-scenes = []
+motion-planning-scenes = [
+    {file = "motion_planning_scenes-0.1.19-py3-none-any.whl", hash = "sha256:2d3cab0461d583c7cad41062d38215dba8f237b255d3f63e749d96ec73fc3690"},
+    {file = "motion_planning_scenes-0.1.19.tar.gz", hash = "sha256:bbc3c43ce48e2a3fc991d59f4dc07d467190901e3092035b3d014efa980cbdb8"},
+]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
