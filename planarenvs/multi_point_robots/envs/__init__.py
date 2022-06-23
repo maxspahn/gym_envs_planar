@@ -1,0 +1,2 @@
+from planarenvs.multi_point_robots.envs.acc import MultiPointRobotsAccEnv
+from planarenvs.multi_point_robots.envs.vel import MultiPointRobotsVelEnv
