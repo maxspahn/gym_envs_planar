@@ -21,7 +21,7 @@ def main():
     n_steps = 1000
     ob = env.reset(pos=np.array([-2.0]), vel=np.array([0.5]))
     if obstacles:
-        from examples.obstacles import (
+        from planarenvs.scenes.obstacles import (
             sphereObst1,
             sphereObst2,
         )

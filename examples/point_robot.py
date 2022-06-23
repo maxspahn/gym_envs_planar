@@ -61,7 +61,7 @@ def run_point_robot(
         env.add_sensor(goal_pos_observer)
 
     if obstacles:
-        from examples.obstacles import (
+        from planarenvs.scenes.obstacles import (
             sphereObst1,
             sphereObst2,
             dynamicSphereObst1,
@@ -73,7 +73,7 @@ def run_point_robot(
         env.add_obstacle(dynamicSphereObst1)
         env.add_obstacle(dynamicSphereObst2)
     if goal:
-        from examples.goal import (
+        from planarenvs.scenes.goal import (
             splineGoal,
             lineGoal,
         )

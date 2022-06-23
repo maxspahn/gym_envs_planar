@@ -24,7 +24,7 @@ def run_n_link_reacher(
     action = np.ones(n) * 8 * 0.01
     ob = env.reset(pos=np.random.rand(n))
     if obstacles:
-        from examples.obstacles import (
+        from planarenvs.scenes.obstacles import (
             sphereObst1,
             sphereObst2,
             dynamicSphereObst2,
@@ -34,7 +34,7 @@ def run_n_link_reacher(
         env.add_obstacle(sphereObst2)
         env.add_obstacle(dynamicSphereObst2)
     if goal:
-        from examples.goal import (
+        from planarenvs.scenes.goal import (
             splineGoal,
         )
 

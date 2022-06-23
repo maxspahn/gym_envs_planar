@@ -24,7 +24,7 @@ def run_mobile_robot(
     action[3] = 1.0
     ob = env.reset(pos=np.random.rand(n))
     if obstacles:
-        from examples.obstacles import (
+        from planarenvs.scenes.obstacles import (
             sphereObst1,
             sphereObst2,
         )

@@ -26,7 +26,7 @@ def main():
         vel=np.array([0.1, 0.0, 0.1]),
     )
     if obstacles:
-        from examples.obstacles import (
+        from planarenvs.scenes.obstacles import (
             sphereObst1,
             sphereObst2,
             dynamicSphereObst1,
