@@ -3,9 +3,8 @@ from MotionPlanningGoal.staticSubGoal import StaticSubGoal
 from MotionPlanningGoal.dynamicSubGoal import DynamicSubGoal
 
 staticGoalDict = {
-    "m": 2,
-    "w": 1.0,
-    "prime": True,
+    "weight": 1.0,
+    "is_primary_goal": True,
     "indices": [0, 1],
     "parent_link": 0,
     "child_link": 3,
@@ -14,11 +13,10 @@ staticGoalDict = {
     "type": "staticSubGoal",
 }
 
-staticGoal = StaticSubGoal(name="goal1", contentDict=staticGoalDict)
+staticGoal = StaticSubGoal(name="goal1", content_dict=staticGoalDict)
 lineGoalDict = {
-    "m": 1,
-    "w": 1.0,
-    "prime": True,
+    "weight": 1.0,
+    "is_primary_goal": True,
     "indices": [1],
     "parent_link": 0,
     "child_link": 3,
@@ -28,11 +26,10 @@ lineGoalDict = {
     "type": "staticSubGoal",
 }
 
-lineGoal = StaticSubGoal(name="goal2", contentDict=lineGoalDict)
+lineGoal = StaticSubGoal(name="goal2", content_dict=lineGoalDict)
 analyticGoalDict = {
-    "m": 2,
-    "w": 1.0,
-    "prime": True,
+    "weight": 1.0,
+    "is_primary_goal": True,
     "indices": [0, 1],
     "parent_link": 0,
     "child_link": 3,
@@ -40,16 +37,15 @@ analyticGoalDict = {
     "epsilon": 0.2,
     "type": "analyticSubGoal",
 }
-analyticGoal = DynamicSubGoal(name="goal2", contentDict=analyticGoalDict)
+analyticGoal = DynamicSubGoal(name="goal2", content_dict=analyticGoalDict)
 splineDict = {
     "degree": 2,
     "controlPoints": [[-2.0, 1.0], [2.0, 0.0], [4.0, 2.0], [3.0, 2.0]],
     "duration": 10,
 }
 splineGoalDict = {
-    "m": 2,
-    "w": 1.0,
-    "prime": True,
+    "weight": 1.0,
+    "is_primary_goal": True,
     "indices": [0, 1],
     "parent_link": 0,
     "child_link": 3,
@@ -57,4 +53,4 @@ splineGoalDict = {
     "epsilon": 0.2,
     "type": "splineSubGoal",
 }
-splineGoal = DynamicSubGoal(name="goal2", contentDict=splineGoalDict)
+splineGoal = DynamicSubGoal(name="goal2", content_dict=splineGoalDict)
