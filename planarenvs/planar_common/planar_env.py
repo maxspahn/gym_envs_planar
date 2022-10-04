@@ -180,9 +180,9 @@ class PlanarEnv(core.Env):
                     bounds["pos"]["high"][1],
                 )
         for obst in self._obsts:
-            obst.renderGym(self._viewer, rendering, t=self.t())
+            obst.render_gym(self._viewer, rendering, t=self.t())
         for goal in self._goals:
-            goal.renderGym(self._viewer, rendering, t=self.t())
+            goal.render_gym(self._viewer, rendering, t=self.t())
 
     def close(self):
         if self._viewer:
