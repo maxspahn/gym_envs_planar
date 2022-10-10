@@ -52,8 +52,8 @@ class MobileRobotEnv(PlanarEnv):
 
     def _terminal(self):
         if (
-            self._state["x"][0] > self.MAX_POS_BASE
-            or self._state["x"][0] < -self.MAX_POS_BASE
+            self._state["joint_state"]["position"][0] > self.MAX_POS_BASE
+            or self._state["joint_state"]["position"][0] < -self.MAX_POS_BASE
         ):
             return True
         return False
@@ -92,7 +92,7 @@ class MobileRobotEnv(PlanarEnv):
         )
         tf = rendering.Transform(
             rotation=0,
-            translation=(self._state["x"][0], 0.5 * self.BASE_HEIGHT),
+            translation=(self._state["joint_state"]["position"][0], 0.5 * self.BASE_HEIGHT),
         )
         link = self._viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
@@ -104,7 +104,7 @@ class MobileRobotEnv(PlanarEnv):
         base_joint.set_color(0.8, 0.8, 0)
         tf0 = rendering.Transform(
             rotation=0,
-            translation=(self._state["x"][0], self.BASE_HEIGHT + 0.2),
+            translation=(self._state["joint_state"]["position"][0], self.BASE_HEIGHT + 0.2),
         )
         base_joint.add_attr(tf0)
         base.add_attr(tf0)
@@ -113,7 +113,7 @@ class MobileRobotEnv(PlanarEnv):
         from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
 
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
-        fk = self._fk.fk(self._state["x"], i)
+        fk = self._fk.fk(self._state["joint_state"]["position"], i)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         link = self._viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
@@ -125,7 +125,7 @@ class MobileRobotEnv(PlanarEnv):
     def render_end_effector(self):
         from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
 
-        fk = self._fk.fk(self._state["x"], self._n)
+        fk = self._fk.fk(self._state["joint_state"]["position"], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self._viewer.draw_circle(0.10)
         eejoint.set_color(0.8, 0.8, 0)

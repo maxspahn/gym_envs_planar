@@ -36,7 +36,7 @@ class GoalSensor(Sensor):
                     break
                 goal_position = goal.position(t=t)
                 goal_distance = dist2circ(
-                    state["x"], goal_position, goal.epsilon()
+                    state["joint_state"]["position"], goal_position, goal.epsilon()
                 )
                 self._observation[idx] = goal_distance
 

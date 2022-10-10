@@ -34,7 +34,7 @@ class ObstacleSensor(Sensor):
                 self._observation[idx] = obst.position(t=t)
         elif self._mode == "distance":
             self._reset()
-            current_position = state["x"]  # only true for point_robot
+            current_position = state["joint_state"]["position"]  # only true for point_robot
             obstacles_info = []
             for id_obstacle, obstacle in enumerate(obstacles):
                 obstacle_position = obstacle.position(t=t)
