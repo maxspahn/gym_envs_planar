@@ -69,7 +69,7 @@ class NLinkReacherEnv(PlanarEnv):
         from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
 
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
-        fk = self._fk.fk(self._state["x"], i)
+        fk = self._fk.fk(self._state["joint_state"]["position"], i)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         link = self._viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
         link.set_color(0, 0.8, 0.8)
@@ -81,7 +81,7 @@ class NLinkReacherEnv(PlanarEnv):
     def render_end_effector(self):
         from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
 
-        fk = self._fk.fk(self._state["x"], self._n)
+        fk = self._fk.fk(self._state["joint_state"]["position"], self._n)
         tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
         eejoint = self._viewer.draw_circle(0.10)
         eejoint.set_color(0.8, 0.8, 0)

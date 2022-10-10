@@ -22,20 +22,16 @@ class GroundRobotArmEnv(GroundRobotEnv):
         self._t += self.dt()
         x0 = np.concatenate(
             (
-                self._state["x"],
-                self._state["vel"],
-                self._state["xdot"],
-                self._state["q"],
-                self._state["qdot"],
+                self._state["joint_state"]["position"],
+                self._state["joint_state"]["forward_velocity"],
+                self._state["joint_state"]["velocity"],
             )
         )
         t = np.arange(0, 2 * self._dt, self._dt)
         ynext = odeint(self.continuous_dynamics, x0, t)
-        self._state["x"] = ynext[1][0:3]
-        self._state["vel"] = ynext[1][3:5]
-        self._state["xdot"] = ynext[1][5:8]
-        self._state["q"] = ynext[1][8 : 8 + self._n_arm]
-        self._state["qdot"] = ynext[1][8 + self._n_arm :]
+        self._state["joint_state"]["position"] = np.concatenate((ynext[1][0:3], ynext[1][8: 8 + self._n_arm]))
+        self._state["joint_state"]["forward_velocity"] = ynext[1][3:5]
+        self._state["joint_state"]["velocity"] = np.concatenate((ynext[1][5:8], ynext[1][8+self._n_arm:]))
 
     def reset(self, pos=None, vel=None):
         self.reset_common()
@@ -46,12 +42,12 @@ class GroundRobotArmEnv(GroundRobotEnv):
             vel = np.zeros(2 + self._n_arm)
         xdot_base = self.compute_xdot(pos[0:3], vel[0:2])
         self._state = {
-            "x": pos[0:3],
-            "vel": vel[0:2],
-            "xdot": xdot_base,
-            "q": pos[3:],
-            "qdot": vel[2:],
-        }
+                "joint_state": {
+                    "position": pos,
+                    "forward_velocity": vel[0:2],
+                    "velocity": np.concatenate((xdot_base, vel[2:])),
+                }
+            }
         self._sensor_state = {}
         return self._get_ob()
 
@@ -63,9 +59,9 @@ class GroundRobotArmEnv(GroundRobotEnv):
         super().render(mode=mode, final=False)
 
         # arm
-        p = self._state["x"][0:2]
-        theta = self._state["x"][2]
-        q = self._state["q"]
+        p = self._state["joint_state"]["position"][0:2]
+        theta = self._state["joint_state"]["position"][2]
+        q = self._state["joint_state"]["position"][3:]
         l, r, t, b = 0, self.LINK_LENGTH, 0.05, -0.05
         p_arm = p + 0.2 * np.array([np.cos(theta), np.sin(theta)])
         tf_arm = rendering.Transform(rotation=theta + q, translation=p_arm)

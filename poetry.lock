@@ -284,7 +284,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "motion-planning-scenes"
-version = "0.2.3"
+version = "0.3.0"
 description = "Generic motion planning scenes, including goals and obstacles."
 category = "main"
 optional = false
@@ -591,7 +591,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.5,<3.10"
-content-hash = "45d7ee9613060dfe4af0a0449e9de71ab81b15cf2d1220a3732c9878961877fd"
+content-hash = "0b67f0f7dc0fc0d6ce288a57eb3fa24d024e6f432849129baaf78ecba17d7d3b"
 
 [metadata.files]
 antlr4-python3-runtime = [
@@ -951,8 +951,8 @@ mccabe = [
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 motion-planning-scenes = [
-    {file = "motion_planning_scenes-0.2.3-py3-none-any.whl", hash = "sha256:f93ecd5dbf9583a54bb5247d88fca0d4f4b1f3b0c1dbcd212bb022e6c9a55122"},
-    {file = "motion_planning_scenes-0.2.3.tar.gz", hash = "sha256:e0e6d97a1b3ce6ee02fb567f4285caba7ea036b6cbb03e674c3042daa0f7793f"},
+    {file = "motion_planning_scenes-0.3.0-py3-none-any.whl", hash = "sha256:ca81b7fe3b78dba796041b2c97b080e290c6c9b98ebfd7c1f7f55ced9baa9a41"},
+    {file = "motion_planning_scenes-0.3.0.tar.gz", hash = "sha256:e9da38c36327d2a91fad1b47f41cecad9f35fa064c5d4847a33b23d737d48109"},
 ]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},

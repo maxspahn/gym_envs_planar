@@ -35,8 +35,8 @@ class MobileBaseEnv(PlanarEnv):
 
     def _terminal(self):
         if (
-            self._state["x"][0] > self.MAX_POS
-            or self._state["x"][0] < -self.MAX_POS
+            self._state["joint_state"]["position"][0] > self.MAX_POS
+            or self._state["joint_state"]["position"][0] < -self.MAX_POS
         ):
             return True
         return False
@@ -54,7 +54,7 @@ class MobileBaseEnv(PlanarEnv):
         # drawAxis
         self._viewer.draw_line((-bound - 0.5, 0), (bound + 0.5, 0))
 
-        p0 = [self._state["x"][0], 0.5 * self.BASE_HEIGHT]
+        p0 = [self._state["joint_state"]["position"][0], 0.5 * self.BASE_HEIGHT]
         tf = rendering.Transform(rotation=0, translation=p0)
         l, r, t, b = (
             -0.5 * self.BASE_WIDTH,

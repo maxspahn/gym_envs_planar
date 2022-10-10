@@ -7,32 +7,23 @@ from planarenvs.ground_robots.envs.ground_robot_arm_env import GroundRobotArmEnv
 class GroundRobotArmAccEnv(GroundRobotArmEnv):
     def set_spaces(self):
         self.observation_space = spaces.Dict(
-            {
-                "x": spaces.Box(
-                    low=-self._lim_up_pos,
-                    high=self._lim_up_pos,
-                    dtype=np.float64
+                {"joint_state": spaces.Dict({
+                    "position": spaces.Box(
+                        low=np.concatenate((-self._lim_up_pos, -self._lim_up_arm_pos)),
+                        high=np.concatenate((self._lim_up_pos, self._lim_up_arm_pos)),
+                        dtype=np.float64
                 ),
-                "q": spaces.Box(
-                    low=-self._lim_up_arm_pos,
-                    high=self._lim_up_arm_pos,
-                    dtype=np.float64,
+                    "velocity": spaces.Box(
+                        low=np.concatenate((-self._lim_up_vel, -self._lim_up_arm_vel)),
+                        high=np.concatenate((self._lim_up_vel, self._lim_up_arm_vel)),
+                        dtype=np.float64
                 ),
-                "xdot": spaces.Box(
-                    low=-self._lim_up_vel,
-                    high=self._lim_up_vel,
-                    dtype=np.float64
-                ),
-                "vel": spaces.Box(
+                "forward_velocity": spaces.Box(
                     low=-self._lim_up_rel_vel,
                     high=self._lim_up_rel_vel,
                     dtype=np.float64,
                 ),
-                "qdot": spaces.Box(
-                    low=-self._lim_up_arm_vel,
-                    high=self._lim_up_arm_vel,
-                    dtype=np.float64,
-                ),
+            })
             }
         )
         a = np.concatenate((self._lim_up_rel_acc, self._lim_up_arm_acc))

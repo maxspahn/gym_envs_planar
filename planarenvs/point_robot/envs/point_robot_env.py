@@ -56,7 +56,7 @@ class PointRobotEnv(PlanarEnv):
         self._lim_up_vel = self._limits["vel"]["high"]
         self._lim_up_acc = self._limits["acc"]["high"]
         self._lim_up_for = self._limits["for"]["high"]
-        self.observation_space.spaces["x"] = spaces.Box(
+        self.observation_space.spaces["joint_state"]["position"] = spaces.Box(
             low=-self._lim_up_pos, high=self._lim_up_pos, dtype=np.float64
         )
         self.observation_space.spaces["xdot"] = spaces.Box(
@@ -94,7 +94,7 @@ class PointRobotEnv(PlanarEnv):
             (0, self._limits["pos"]["high"][1]),
         )
         # drawPoint
-        x = self._state["x"][0:2]
+        x = self._state["joint_state"]["position"][0:2]
         tf0 = rendering.Transform(rotation=0, translation=(x[0], x[1]))
         joint = self._viewer.draw_circle(0.10)
         joint.set_color(0.8, 0.8, 0)

@@ -9,33 +9,119 @@ from gym import spaces
 
 
 class WrongObservationError(Exception):
-    def __init__(self, msg, observation, observation_space):
-        msg_ext = self.get_wrong_observation(observation, observation_space)
+    """Exception when observation lays outside the defined observation space.
+
+    This Exception is initiated when an the observation is not within the
+    defined observation space. The purpose of this exception is to give
+    the user better information about which specific part of the observation
+    caused the problem.
+    """
+
+    def __init__(self, msg: str, observation: dict, observationSpace):
+        """Constructor for error message.
+
+        Parameters
+        ----------
+
+        msg: Default error message
+        observation: Observation when mismatch occured
+        observationSpace: Observation space of environment
+        """
+        msg_ext = self.get_wrong_observation(observation, observationSpace)
         super().__init__(msg + msg_ext)
 
-    def get_wrong_observation(
-        self, observation: dict, observation_space: spaces.Dict
+    def get_wrong_observation(self, o: dict, os) -> str:
+        """Detecting where the error occured.
+
+        Parameters
+        ----------
+
+        o: observation
+        os: observation space
+        """
+        msg_ext = ":\n"
+        msg_ext += self.check_dict(o, os)
+        return msg_ext
+
+    def check_dict(
+        self, o_dict: dict, os_dict, depth: int = 1, tabbing: str = ""
     ) -> str:
-        msg_ext = ": "
-        for key in observation.keys():
-            if not observation_space[key].contains(observation[key]):
-                msg_ext += "Error in " + key
-                for i, val in enumerate(observation[key]):
-                    if val < observation_space[key].low[i]:
-                        msg_ext += (
-                            f"[{i}]: {val} < {observation_space[key].low[i]}"
-                        )
-                    elif val > observation_space[key].high[i]:
-                        msg_ext += (
-                            f"[{i}]: {val} > {observation_space[key].high[i]}"
-                        )
+        """Checking correctness of dictionary observation.
+
+        This methods searches for the cause for wrong observation.
+        It loops over all keys in this dictionary and verifies whether
+        observation and observation spaces fit together. If this is not
+        the case, the concerned key is checked again. As the observation
+        might have nested dictionaries, this function is called
+        recursively.
+
+        Parameters
+        ----------
+
+        o_dict: observation dictionary
+        os_dict: observation space dictionary
+        depth: current depth of nesting
+        tabbing: tabbing for error message
+        """
+        msg_ext = ""
+        for key in o_dict.keys():
+            if not os_dict[key].contains(o_dict[key]):
+                if isinstance(o_dict[key], dict):
+                    msg_ext += tabbing + key + "\n"
+                    msg_ext += self.check_dict(
+                        o_dict[key],
+                        os_dict[key],
+                        depth=depth + 1,
+                        tabbing=tabbing + "\t",
+                    )
+                else:
+                    msg_ext += self.check_box(
+                        o_dict[key], os_dict[key], key, tabbing
+                    )
+        return msg_ext
+
+    def check_box(
+        self, o_box: np.ndarray, os_box, key: str, tabbing: str
+    ) -> str:
+        """Checks correctness of box observation.
+
+        This methods detects which value in the observation caused the
+        error to be raised. Then it updates the error message msg.
+
+        Parameters
+        ----------
+
+        o_box: observation box
+        os_box: observation space box
+        key: key of observation
+        tabbing: current tabbing for error message
+        """
+        msg_ext = tabbing + "Error in " + key + "\n"
+        if isinstance(o_box, float):
+            val = o_box
+            if val < os_box.low[0]:
+                msg_ext += f"{tabbing}\t{key}: {val} < {os_box.low[0]}\n"
+            elif val > os_box.high[0]:
+                msg_ext += f"{tabbing}\t{key}: {val} > {os_box.high[0]}\n"
+            return msg_ext
+
+        for i, val in enumerate(o_box):
+            if val < os_box.low[i]:
+                msg_ext += f"{tabbing}\t{key}[{i}]: {val} < {os_box.low[i]}\n"
+            elif val > os_box.high[i]:
+                msg_ext += f"{tabbing}\t{key}[{i}]: {val} > {os_box.high[i]}\n"
         return msg_ext
 
 
 class PlanarEnv(core.Env):
     def __init__(self, render: bool = False, dt=0.01):
         self._viewer = None
-        self._state = {'x': None, 'xdot': None}
+        self._state = {
+            'joint_state': {
+                'position': None,
+                'velocity': None
+            }
+        }
         self._sensor_state = None
         self.seed()
         self._dt = dt
@@ -79,7 +165,6 @@ class PlanarEnv(core.Env):
     def add_sensor(self, sensor):
         self._sensors.append(sensor)
         observation_space_dict = dict(self.observation_space.spaces)
-        print(sensor.name)
         observation_space_dict[sensor.name] = sensor.observation_space()
         self.observation_space = spaces.Dict(observation_space_dict)
 
@@ -98,7 +183,8 @@ class PlanarEnv(core.Env):
             pos = np.zeros(self._n)
         if not isinstance(vel, np.ndarray) or not vel.size == self._n:
             vel = np.zeros(self._n)
-        self._state = {"x": pos, "xdot": vel}
+        self._state['joint_state']['position'] = pos
+        self._state['joint_state']['velocity'] = vel
         self._sensor_state = {}
         return self._get_ob()
 
@@ -142,10 +228,14 @@ class PlanarEnv(core.Env):
     def integrate(self):
         self._t += self.dt()
         t = np.arange(0, 2 * self._dt, self._dt)
-        x0 = np.concatenate((self._state["x"], self._state["xdot"]))
+        x0 = np.concatenate((
+                self._state['joint_state']['position'], 
+                self._state['joint_state']['velocity'], 
+            ))
         ynext = odeint(self.continuous_dynamics, x0, t)
-        self._state["x"] = ynext[1][0 : self._n]
-        self._state["xdot"] = ynext[1][self._n : 2 * self._n]
+        self._state["joint_state"]["position"] = ynext[1][0 : self._n]
+        self._state["joint_state"]["velocity"] = ynext[1][self._n: 2 * self._n]
+
 
     @abstractmethod
     def render(self, mode="human"):

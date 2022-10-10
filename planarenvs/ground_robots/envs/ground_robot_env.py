@@ -53,9 +53,11 @@ class GroundRobotEnv(PlanarEnv):
         if not isinstance(vel, np.ndarray) or not vel.size == 2:
             vel = np.zeros(2)
         self._state = {
-            "x": pos,
-            "vel": vel,
-            "xdot": self.compute_xdot(pos, vel),
+                "joint_state": {
+                    "position": pos,
+                    "forward_velocity": vel,
+                    "velocity": self.compute_xdot(pos, vel),
+                }
         }
         self._sensor_state = {}
         return self._get_ob()
@@ -78,13 +80,16 @@ class GroundRobotEnv(PlanarEnv):
     def integrate(self):
         self._t += self.dt()
         x0 = np.concatenate(
-            (self._state["x"], self._state["vel"], self._state["xdot"])
+            (
+                self._state["joint_state"]["position"],
+                self._state["joint_state"]["forward_velocity"],
+                self._state["joint_state"]["velocity"])
         )
         t = np.arange(0, 2 * self._dt, self._dt)
         ynext = odeint(self.continuous_dynamics, x0, t)
-        self._state["x"] = ynext[1][0:3]
-        self._state["vel"] = ynext[1][3:5]
-        self._state["xdot"] = ynext[1][5:8]
+        self._state["joint_state"]["position"] = ynext[1][0:3]
+        self._state["joint_state"]["forward_velocity"] = ynext[1][3:5]
+        self._state["joint_state"]["velocity"] = ynext[1][5:8]
 
     def _terminal(self):
         return False
@@ -104,8 +109,8 @@ class GroundRobotEnv(PlanarEnv):
         self._viewer.draw_line((-bound_x, 0.0), (bound_x, 0.0))
         self._viewer.draw_line((0.0, -bound_y), (0.0, bound_y))
 
-        p = self._state["x"][0:2]
-        theta = self._state["x"][2]
+        p = self._state["joint_state"]["position"][0:2]
+        theta = self._state["joint_state"]["position"][2]
 
         tf = rendering.Transform(rotation=theta, translation=p)
 

@@ -5,14 +5,14 @@ from gym import spaces
 class AccEnv(object):
     def set_spaces(self):
         self.observation_space = spaces.Dict(
-            {
-                "x": spaces.Box(
+            {"joint_state": spaces.Dict({
+                "position": spaces.Box(
                     low=-self._lim_up_pos, high=self._lim_up_pos, dtype=np.float64
                 ),
-                "xdot": spaces.Box(
+                "velocity": spaces.Box(
                     low=-self._lim_up_vel, high=self._lim_up_vel, dtype=np.float64
                 ),
-            }
+            })}
         )
         self.action_space = spaces.Box(
             low=-self._lim_up_acc, high=self._lim_up_acc, dtype=np.float64
