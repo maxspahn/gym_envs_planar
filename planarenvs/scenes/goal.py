@@ -16,7 +16,7 @@ staticGoalDict = {
 staticGoal = StaticSubGoal(name="goal1", content_dict=staticGoalDict)
 lineGoalDict = {
     "weight": 1.0,
-    "is_primary_goal": True,
+    "is_primary_goal": False,
     "indices": [1],
     "parent_link": 0,
     "child_link": 3,

@@ -208,11 +208,11 @@ class PlanarEnv(core.Env):
     def _get_ob(self):
         observation = dict(self._state)
         observation.update(self._sensor_state)
-        if not self.observation_space.contains(observation):
+        if not self.observation_space['joint_state'].contains(observation['joint_state']):
             err = WrongObservationError(
                 "The observation does not fit the defined observation space",
-                observation,
-                self.observation_space,
+                observation['joint_state'],
+                self.observation_space['joint_state'],
             )
             warnings.warn(str(err))
         return observation
