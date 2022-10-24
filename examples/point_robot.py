@@ -60,6 +60,14 @@ def run_point_robot(
         goal_pos_observer = GoalSensor(nb_goals=1, mode="position")
         env.add_sensor(goal_pos_observer)
 
+        from planarenvs.sensors.full_sensor import FullSensor
+        full_sensor = FullSensor(
+            ['position', 'velocity', 'is_primary_goal'],
+            ['position', 'velocity', 'radius', 'type'],
+            variance=0.0
+        )
+        env.add_sensor(full_sensor)
+
     if obstacles:
         from planarenvs.scenes.obstacles import (
             sphereObst1,
@@ -76,9 +84,11 @@ def run_point_robot(
         from planarenvs.scenes.goal import (
             splineGoal,
             lineGoal,
+            staticGoal,
         )
 
         env.add_goal(splineGoal)
+        env.add_goal(staticGoal)
         env.add_goal(lineGoal)
 
     print("Starting episode")
