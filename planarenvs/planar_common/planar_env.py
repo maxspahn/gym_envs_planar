@@ -192,7 +192,7 @@ class PlanarEnv(core.Env):
         self._action = action
         self.integrate()
         for sensor in self._sensors:
-            self._sensor_state[sensor.name] = sensor.sense(
+            self._sensor_state = sensor.sense(
                 self._state, self._goals, self._obsts, self.t()
             )
         terminal = self._terminal()
