@@ -551,14 +551,14 @@ tests = ["pytest (>=4.6)"]
 
 [[package]]
 name = "mpscenes"
-version = "0.2.0"
+version = "0.1.2"
 description = "Generic motion planning scenes, including goals and obstacles."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "mpscenes-0.2.0-py3-none-any.whl", hash = "sha256:1638fe27494c860ae05fbd0f74c47e8aadbc4151d8401b2ea24c4cc2b85cb5a9"},
-    {file = "mpscenes-0.2.0.tar.gz", hash = "sha256:2e046b781bd0bf1ab6f7578975c66e2d434d4014100c76e40076e3b03db15db5"},
+    {file = "mpscenes-0.1.2-py3-none-any.whl", hash = "sha256:e0dad26edbde6c503ae5ac96bb0341c4ce9141d7c9deb88a5c5a4c0bae5c53ee"},
+    {file = "mpscenes-0.1.2.tar.gz", hash = "sha256:57ae9ac01b8861cadab1111954e7af19c4bcceb44f8626d9895cf3f43525c1bd"},
 ]
 
 [package.dependencies]
@@ -720,14 +720,14 @@ files = [
 
 [[package]]
 name = "pylint"
-version = "2.16.0"
+version = "2.16.1"
 description = "python code static checker"
 category = "main"
 optional = false
 python-versions = ">=3.7.2"
 files = [
-    {file = "pylint-2.16.0-py3-none-any.whl", hash = "sha256:55e5cf00601c4cfe2e9404355c743a14e63be85df7409da7e482ebde5f9f14a1"},
-    {file = "pylint-2.16.0.tar.gz", hash = "sha256:43ee36c9b690507ef9429ce1802bdc4dcde49454c3d665e39c23791567019c0a"},
+    {file = "pylint-2.16.1-py3-none-any.whl", hash = "sha256:bad9d7c36037f6043a1e848a43004dfd5ea5ceb05815d713ba56ca4503a9fe37"},
+    {file = "pylint-2.16.1.tar.gz", hash = "sha256:ffe7fa536bb38ba35006a7c8a6d2efbfdd3d95bbf21199cad31f76b1c50aaf30"},
 ]
 
 [package.dependencies]
@@ -1069,4 +1069,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.10"
-content-hash = "e705bcddefe435fbcc58f0dfbbb51e2eeb9cd3350ceb61cb10dcab00ebcc8db2"
+content-hash = "22012fae33f0a40babe640dc14e5fc97d2b209841fc2974d7812ecdaad9666bb"
