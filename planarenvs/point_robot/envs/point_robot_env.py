@@ -78,27 +78,51 @@ class PointRobotEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def render(self, mode="human"):
-        self.render_common(self._limits)
-        from gym.envs.classic_control import (  # pylint: disable=import-outside-toplevel
-            rendering,
-        )
+    def render(self):
+        import pygame
+        from pygame import gfxdraw
 
-        # drawAxis
-        self._viewer.draw_line(
-            (self._limits["pos"]["low"][0], 0),
-            (self._limits["pos"]["high"][0], 0),
-        )
-        self._viewer.draw_line(
-            (0, self._limits["pos"]["low"][1]),
-            (0, self._limits["pos"]["high"][1]),
-        )
-        # drawPoint
+        if self._state is None:
+            return None
+
         x = self._state["joint_state"]["position"][0:2]
-        tf0 = rendering.Transform(rotation=0, translation=(x[0], x[1]))
-        joint = self._viewer.draw_circle(0.10)
-        joint.set_color(0.8, 0.8, 0)
-        joint.add_attr(tf0)
-        time.sleep(self.dt())
 
-        return self._viewer.render(return_rgb_array=mode == "rgb_array")
+        surf = pygame.Surface((self.SCREEN_DIM, self.SCREEN_DIM))
+        surf.fill((255, 255, 255))
+
+        scale = self.SCREEN_DIM / (self._limits['pos']['high'][0] - self._limits['pos']['low'][0])
+        offset = self.SCREEN_DIM/(2 * scale)
+
+        pygame.draw.line(
+            surf,
+            start_pos=(
+                self._limits['pos']['low'][0] * scale + offset * scale,
+                offset * scale
+            ),
+            end_pos=(
+                self._limits['pos']['high'][0] * scale + offset * scale,
+                offset * scale
+            ),
+            color=(0, 0, 0),
+        )
+        pygame.draw.line(
+            surf,
+            start_pos=(
+                offset * scale,
+                self._limits['pos']['low'][1] * scale + offset * scale,
+            ),
+            end_pos=(
+                offset * scale,
+                self._limits['pos']['high'][1] * scale + offset * scale,
+            ),
+            color=(0, 0, 0),
+        )
+        pos_x = x[0] * scale + offset * scale
+        pos_y = x[1] * scale + offset * scale
+        gfxdraw.filled_circle(surf, int(pos_x), int(pos_y), int(0.1 * scale), (204, 204, 0))
+        surf = pygame.transform.flip(surf, False, True)
+        self.screen.blit(surf, (0, 0))
+
+        pygame.event.pump()
+        time.sleep(self.dt())
+        pygame.display.flip()

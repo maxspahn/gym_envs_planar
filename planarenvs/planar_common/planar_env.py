@@ -133,6 +133,15 @@ class PlanarEnv(core.Env):
         self.observation_space = None
         self._n = None
 
+        self.screen_width = 600
+        self.screen_height = 400
+        self.screen = None
+        self.clock = None
+        self.isopen = True
+        self.state = None
+
+        self.SCREEN_DIM = 500
+
     @property
     def n(self):
         return self._n
@@ -241,7 +250,7 @@ class PlanarEnv(core.Env):
     def render(self, mode="human"):
         pass
 
-    def render_common(self, bounds):
+    def render_common_old(self, bounds):
         from gym.envs.classic_control import (
             rendering,
         )  # pylint: disable=import-outside-toplevel
@@ -273,8 +282,20 @@ class PlanarEnv(core.Env):
             obst.render_gym(self._viewer, rendering, t=self.t())
         for goal in self._goals:
             goal.render_gym(self._viewer, rendering, t=self.t())
+            
+    def render_common(self, bounds):
+        import pygame
+        if self.screen is None:
+            pygame.init()
+            pygame.display.init()
+            self.screen = pygame.display.set_mode(
+                (self.SCREEN_DIM, self.SCREEN_DIM)
+            )
 
     def close(self):
-        if self._viewer:
-            self._viewer.close()
-            self._viewer = None
+        if self.screen is not None:
+            import pygame
+
+            pygame.display.quit()
+            pygame.quit()
+            self.isopen = False
