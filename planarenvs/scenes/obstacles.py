@@ -1,5 +1,5 @@
-from MotionPlanningEnv.sphereObstacle import SphereObstacle
-from MotionPlanningEnv.dynamicSphereObstacle import DynamicSphereObstacle
+from mpscenes.obstacles.dynamic_sphere_obstacle import DynamicSphereObstacle
+from mpscenes.obstacles.sphere_obstacle import SphereObstacle
 
 obst1Dict = {
     "type": "sphere",

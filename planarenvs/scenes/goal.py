@@ -1,6 +1,5 @@
-from MotionPlanningEnv.sphereObstacle import SphereObstacle
-from MotionPlanningGoal.staticSubGoal import StaticSubGoal
-from MotionPlanningGoal.dynamicSubGoal import DynamicSubGoal
+from mpscenes.goals.static_sub_goal import StaticSubGoal
+from mpscenes.goals.dynamic_sub_goal import DynamicSubGoal
 
 staticGoalDict = {
     "weight": 1.0,
@@ -33,7 +32,7 @@ analyticGoalDict = {
     "indices": [0, 1],
     "parent_link": 0,
     "child_link": 3,
-    "trajectory": ["1 + ca.cos(0.3 * t)", "2"],
+    "trajectory": ["1 + sp.cos(0.3 * t) + 1", "2.0"],
     "epsilon": 0.2,
     "type": "analyticSubGoal",
 }
