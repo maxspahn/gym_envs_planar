@@ -1,5 +1,4 @@
 import numpy as np
-import time
 from abc import abstractmethod
 from gym import spaces
 import logging
@@ -78,27 +77,23 @@ class PointRobotEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def render(self, mode="human"):
-        self.render_common(self._limits)
-        from gym.envs.classic_control import (  # pylint: disable=import-outside-toplevel
-            rendering,
-        )
+    def render_specific(self):
 
-        # drawAxis
-        self._viewer.draw_line(
-            (self._limits["pos"]["low"][0], 0),
-            (self._limits["pos"]["high"][0], 0),
+        if self._state is None:
+            return None
+        self._scale = self.SCREEN_DIM / (
+            self._limits["pos"]["high"][0] - self._limits["pos"]["low"][0]
         )
-        self._viewer.draw_line(
-            (0, self._limits["pos"]["low"][1]),
-            (0, self._limits["pos"]["high"][1]),
-        )
-        # drawPoint
+        self._offset = self.SCREEN_DIM / (2 * self._scale)
+
         x = self._state["joint_state"]["position"][0:2]
-        tf0 = rendering.Transform(rotation=0, translation=(x[0], x[1]))
-        joint = self._viewer.draw_circle(0.10)
-        joint.set_color(0.8, 0.8, 0)
-        joint.add_attr(tf0)
-        time.sleep(self.dt())
 
-        return self._viewer.render(return_rgb_array=mode == "rgb_array")
+        self.render_line(
+            [self._limits["pos"]["low"][0], 0],
+            [self._limits["pos"]["high"][0], 0],
+        )
+        self.render_line(
+            [0, self._limits["pos"]["low"][0]],
+            [0, self._limits["pos"]["high"][0]],
+        )
+        self.render_point(x)

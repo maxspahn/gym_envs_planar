@@ -36,13 +36,13 @@ def run_point_robot(
         ObstacleDistance: delta_x and delta_y to the obstacles
     """
     env = gym.make("point-robot-vel-v0", render=render, dt=0.01)
-    init_pos = np.array([0.0, -1.0])
-    init_vel = np.array([-1.0, 0.0])
+    init_pos = np.array([0.0, 0.0])
+    init_vel = np.array([0.0, 0.0])
     ob = env.reset(pos=init_pos, vel=init_vel)
     env.reset_limits(
         pos={"high": np.array([2.0, 3.0]), "low": np.array([-2.0, -3.0])}
     )
-    sensors = True
+    sensors = False
     if sensors:
         from planarenvs.sensors.goal_sensor import (
             GoalSensor,

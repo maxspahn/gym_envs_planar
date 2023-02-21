@@ -1,4 +1,7 @@
 from abc import abstractmethod
+import time
+import pygame
+from pygame import gfxdraw
 import numpy as np
 from scipy.integrate import odeint
 import warnings
@@ -133,6 +136,15 @@ class PlanarEnv(core.Env):
         self.observation_space = None
         self._n = None
 
+        self.screen_width = 600
+        self.screen_height = 400
+        self.screen = None
+        self.clock = None
+        self.isopen = True
+        self.state = None
+
+        self.SCREEN_DIM = 500
+
     @property
     def n(self):
         return self._n
@@ -238,10 +250,10 @@ class PlanarEnv(core.Env):
 
 
     @abstractmethod
-    def render(self, mode="human"):
+    def render_specific(self, mode="human"):
         pass
 
-    def render_common(self, bounds):
+    def render_common_old(self, bounds):
         from gym.envs.classic_control import (
             rendering,
         )  # pylint: disable=import-outside-toplevel
@@ -274,7 +286,63 @@ class PlanarEnv(core.Env):
         for goal in self._goals:
             goal.render_gym(self._viewer, rendering, t=self.t())
 
+    def render_line(self, point_a, point_b):
+        point_a[0] += self._offset
+        point_a[1] += self._offset
+        point_b[0] += self._offset
+        point_b[1] += self._offset
+        point_a[0] *= self._scale
+        point_a[1] *= self._scale
+        point_b[0] *= self._scale
+        point_b[1] *= self._scale
+        pygame.draw.line(
+            self.surf,
+            start_pos=point_a,
+            end_pos=point_b,
+            color=(0, 0, 0),
+        )
+
+    def render_polygone(self, coordinates, color=(204, 204, 0)):
+        for coordinate in coordinates:
+            coordinate[0] = (coordinate[0] + self._offset) * self._scale
+            coordinate[1] = (coordinate[1] + self._offset) * self._scale
+        gfxdraw.filled_polygon(self.surf, coordinates, color)
+
+
+    def render_point(self, point_a, color=(204, 204, 0)):
+        pos_x = point_a[0] * self._scale + self._offset * self._scale
+        pos_y = point_a[1] * self._scale + self._offset * self._scale
+        gfxdraw.filled_circle(
+            self.surf,
+            int(pos_x),
+            int(pos_y),
+            int(0.1 * self._scale),
+            color,
+        )
+
+            
+    def render(self):
+        import pygame
+        if self.screen is None:
+            pygame.init()
+            pygame.display.init()
+            self.screen = pygame.display.set_mode(
+                (self.SCREEN_DIM, self.SCREEN_DIM)
+            )
+        self.surf = pygame.Surface((self.SCREEN_DIM, self.SCREEN_DIM))
+        self.surf.fill((255, 255, 255))
+        self.render_specific()
+        self.surf = pygame.transform.flip(self.surf, False, True)
+        self.screen.blit(self.surf, (0, 0))
+
+        pygame.event.pump()
+        pygame.display.flip()
+        time.sleep(self.dt())
+
     def close(self):
-        if self._viewer:
-            self._viewer.close()
-            self._viewer = None
+        if self.screen is not None:
+            import pygame
+
+            pygame.display.quit()
+            pygame.quit()
+            self.isopen = False
