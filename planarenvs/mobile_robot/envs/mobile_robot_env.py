@@ -1,5 +1,4 @@
 import numpy as np
-import time
 from abc import abstractmethod
 
 from forwardkinematics.planarFks.mobileRobotFk import MobileRobotFk
@@ -68,13 +67,9 @@ class MobileRobotEnv(PlanarEnv):
 
     def render_specific(self, mode="human"):
         bound = self.MAX_POS_BASE + 1.0
-        bounds = [bound, bound]
         self._scale = self.SCREEN_DIM / (2 * bound)
-        self._offset = self.SCREEN_DIM/(2 * self._scale)
-        self.render_line(
-            [-5.5, 0],
-            [5.5, 0]
-        )
+        self._offset = self.SCREEN_DIM / (2 * self._scale)
+        self.render_line([-5.5, 0], [5.5, 0])
 
         self.render_base()
         for i in range(1, self._n):
@@ -93,22 +88,27 @@ class MobileRobotEnv(PlanarEnv):
         corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
         transformed_corner_points = []
         for corner_point in corner_points:
-            transformed_corner_points.append(np.dot(tf_matrix, corner_point)[0:2])
+            transformed_corner_points.append(
+                np.dot(tf_matrix, corner_point)[0:2]
+            )
         self.render_polygone(transformed_corner_points)
         self.render_point([p0[0], self.BASE_HEIGHT + 0.2])
 
     def render_link(self, i):
-        fk = self._fk.fk(self._state["joint_state"]["position"], i, positionOnly=False)
+        fk = self._fk.fk(
+            self._state["joint_state"]["position"], i, positionOnly=False
+        )
         c, s = np.cos(fk[2]), np.sin(fk[2])
         tf_matrix = np.array(((c, -s, fk[0]), (s, c, fk[1]), (0, 0, 1)))
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
         corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
         transformed_corner_points = []
         for corner_point in corner_points:
-            transformed_corner_points.append(np.dot(tf_matrix, corner_point)[0:2])
+            transformed_corner_points.append(
+                np.dot(tf_matrix, corner_point)[0:2]
+            )
         self.render_polygone(transformed_corner_points, color=(0, 0, 0))
         self.render_point(fk[0:2])
-
 
     def render_end_effector(self):
         fk = self._fk.fk(self._state["joint_state"]["position"], self._n)

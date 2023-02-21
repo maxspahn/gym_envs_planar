@@ -81,17 +81,19 @@ class PointRobotEnv(PlanarEnv):
 
         if self._state is None:
             return None
-        self._scale = self.SCREEN_DIM / (self._limits['pos']['high'][0] - self._limits['pos']['low'][0])
-        self._offset = self.SCREEN_DIM/(2 * self._scale)
+        self._scale = self.SCREEN_DIM / (
+            self._limits["pos"]["high"][0] - self._limits["pos"]["low"][0]
+        )
+        self._offset = self.SCREEN_DIM / (2 * self._scale)
 
         x = self._state["joint_state"]["position"][0:2]
 
         self.render_line(
-            [self._limits['pos']['low'][0], 0],
-            [self._limits['pos']['high'][0], 0]
+            [self._limits["pos"]["low"][0], 0],
+            [self._limits["pos"]["high"][0], 0],
         )
         self.render_line(
-            [0, self._limits['pos']['low'][0]],
-            [0, self._limits['pos']['high'][0]]
+            [0, self._limits["pos"]["low"][0]],
+            [0, self._limits["pos"]["high"][0]],
         )
         self.render_point(x)

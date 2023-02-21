@@ -1,6 +1,5 @@
 import numpy as np
 from abc import abstractmethod
-import time
 
 from planarenvs.planar_common.planar_env import PlanarEnv
 
@@ -47,13 +46,9 @@ class MobileBaseEnv(PlanarEnv):
 
     def render_specific(self, mode="human"):
         bound = self.MAX_POS + 1.0
-        bounds = [bound, bound]
         self._scale = self.SCREEN_DIM / (2 * bound)
-        self._offset = self.SCREEN_DIM/(2 * self._scale)
-        self.render_line(
-            [-bound - 0.5, 0],
-            [bound + 0.5, 0]
-        )
+        self._offset = self.SCREEN_DIM / (2 * self._scale)
+        self.render_line([-bound - 0.5, 0], [bound + 0.5, 0])
 
         p0 = [self._state["joint_state"]["position"][0], 0.5 * self.BASE_HEIGHT]
         tf_matrix = np.array(((1, 0, p0[0]), (0, 1, p0[1]), (0, 0, 1)))
@@ -66,5 +61,7 @@ class MobileBaseEnv(PlanarEnv):
         corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
         transformed_corner_points = []
         for corner_point in corner_points:
-            transformed_corner_points.append(np.dot(tf_matrix, corner_point)[0:2])
+            transformed_corner_points.append(
+                np.dot(tf_matrix, corner_point)[0:2]
+            )
         self.render_polygone(transformed_corner_points)
