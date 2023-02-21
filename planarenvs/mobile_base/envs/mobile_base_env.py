@@ -45,26 +45,26 @@ class MobileBaseEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def render(self, mode="human"):
+    def render_specific(self, mode="human"):
         bound = self.MAX_POS + 1.0
         bounds = [bound, bound]
-        self.render_common(bounds)
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
-
-        # drawAxis
-        self._viewer.draw_line((-bound - 0.5, 0), (bound + 0.5, 0))
+        self._scale = self.SCREEN_DIM / (2 * bound)
+        self._offset = self.SCREEN_DIM/(2 * self._scale)
+        self.render_line(
+            [-bound - 0.5, 0],
+            [bound + 0.5, 0]
+        )
 
         p0 = [self._state["joint_state"]["position"][0], 0.5 * self.BASE_HEIGHT]
-        tf = rendering.Transform(rotation=0, translation=p0)
+        tf_matrix = np.array(((1, 0, p0[0]), (0, 1, p0[1]), (0, 0, 1)))
         l, r, t, b = (
             -0.5 * self.BASE_WIDTH,
             0.5 * self.BASE_WIDTH,
             0.5 * self.BASE_HEIGHT,
             -0.5 * self.BASE_HEIGHT,
         )
-        link = self._viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
-        link.set_color(0, 0.8, 0.8)
-        link.add_attr(tf)
-        time.sleep(self.dt())
-
-        return self._viewer.render(return_rgb_array=mode == "rgb_array")
+        corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
+        transformed_corner_points = []
+        for corner_point in corner_points:
+            transformed_corner_points.append(np.dot(tf_matrix, corner_point)[0:2])
+        self.render_polygone(transformed_corner_points)

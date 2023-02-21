@@ -66,67 +66,50 @@ class MobileRobotEnv(PlanarEnv):
     def continuous_dynamics(self, x, t):
         pass
 
-    def render(self, mode="human"):
+    def render_specific(self, mode="human"):
         bound = self.MAX_POS_BASE + 1.0
         bounds = [bound, bound]
-        self.render_common(bounds)
-
-        # drawAxis
-        self._viewer.draw_line((-5.5, 0), (5.5, 0))
+        self._scale = self.SCREEN_DIM / (2 * bound)
+        self._offset = self.SCREEN_DIM/(2 * self._scale)
+        self.render_line(
+            [-5.5, 0],
+            [5.5, 0]
+        )
 
         self.render_base()
         for i in range(1, self._n):
             self.render_link(i)
         self.render_end_effector()
-        time.sleep(self.dt())
-        return self._viewer.render(return_rgb_array=mode == "rgb_array")
 
     def render_base(self):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
-
+        p0 = [self._state["joint_state"]["position"][0], 0.5 * self.BASE_HEIGHT]
+        tf_matrix = np.array(((1, 0, p0[0]), (0, 1, p0[1]), (0, 0, 1)))
         l, r, t, b = (
             -0.5 * self.BASE_WIDTH,
             0.5 * self.BASE_WIDTH,
             0.5 * self.BASE_HEIGHT,
             -0.5 * self.BASE_HEIGHT,
         )
-        tf = rendering.Transform(
-            rotation=0,
-            translation=(self._state["joint_state"]["position"][0], 0.5 * self.BASE_HEIGHT),
-        )
-        link = self._viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
-        link.set_color(0, 0.8, 0.8)
-        link.add_attr(tf)
-        base = self._viewer.draw_polygon(
-            [(-0.2, -0.2), (0.0, 0.0), (0.0, 0.0), (0.2, -0.2)]
-        )
-        base_joint = self._viewer.draw_circle(0.10)
-        base_joint.set_color(0.8, 0.8, 0)
-        tf0 = rendering.Transform(
-            rotation=0,
-            translation=(self._state["joint_state"]["position"][0], self.BASE_HEIGHT + 0.2),
-        )
-        base_joint.add_attr(tf0)
-        base.add_attr(tf0)
+        corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
+        transformed_corner_points = []
+        for corner_point in corner_points:
+            transformed_corner_points.append(np.dot(tf_matrix, corner_point)[0:2])
+        self.render_polygone(transformed_corner_points)
+        self.render_point([p0[0], self.BASE_HEIGHT + 0.2])
 
     def render_link(self, i):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
-
+        fk = self._fk.fk(self._state["joint_state"]["position"], i, positionOnly=False)
+        c, s = np.cos(fk[2]), np.sin(fk[2])
+        tf_matrix = np.array(((c, -s, fk[0]), (s, c, fk[1]), (0, 0, 1)))
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
-        fk = self._fk.fk(self._state["joint_state"]["position"], i)
-        tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
-        link = self._viewer.draw_polygon([(l, b), (l, t), (r, t), (r, b)])
-        link.set_color(0, 0.8, 0.8)
-        joint = self._viewer.draw_circle(0.10)
-        joint.set_color(0.8, 0.8, 0)
-        link.add_attr(tf)
-        joint.add_attr(tf)
+        corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
+        transformed_corner_points = []
+        for corner_point in corner_points:
+            transformed_corner_points.append(np.dot(tf_matrix, corner_point)[0:2])
+        self.render_polygone(transformed_corner_points, color=(0, 0, 0))
+        self.render_point(fk[0:2])
+
 
     def render_end_effector(self):
-        from gym.envs.classic_control import rendering #pylint: disable=import-outside-toplevel
-
         fk = self._fk.fk(self._state["joint_state"]["position"], self._n)
-        tf = rendering.Transform(rotation=fk[2], translation=fk[0:2])
-        eejoint = self._viewer.draw_circle(0.10)
-        eejoint.set_color(0.8, 0.8, 0)
-        eejoint.add_attr(tf)
+        self.render_point(fk[0:2], color=(0.8 * 255, 0.8 * 255, 0.0 * 255))

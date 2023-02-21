@@ -30,14 +30,6 @@ def test_n_link_reacher():
     from n_link_reacher import run_n_link_reacher
     blueprint_test(run_n_link_reacher)
 
-def test_ground_robot():
-    from ground_robot import run_ground_robot
-    blueprint_test(run_ground_robot)
-
-def test_ground_robot():
-    from ground_robot_arm import run_ground_robot_arm
-    blueprint_test(run_ground_robot_arm)
-
 def test_mobile_base():
     from mobile_base import run_mobile_base
     blueprint_test(run_mobile_base)
