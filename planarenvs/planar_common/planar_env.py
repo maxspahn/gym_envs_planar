@@ -10,6 +10,8 @@ from gym import core
 from gym.utils import seeding
 from gym import spaces
 
+from mpscenes.goals.goal_composition import GoalComposition
+
 
 class WrongObservationError(Exception):
     """Exception when observation lays outside the defined observation space.
@@ -117,12 +119,15 @@ class WrongObservationError(Exception):
 
 
 class PlanarEnv(core.Env):
+
+    SCREEN_DIM = 500
+
     def __init__(self, render: bool = False, dt=0.01):
         self._viewer = None
         self._state = {
-            'joint_state': {
-                'position': None,
-                'velocity': None
+            "joint_state": {
+                "position": None,
+                "velocity": None
             }
         }
         self._sensor_state = None
@@ -143,7 +148,6 @@ class PlanarEnv(core.Env):
         self.isopen = True
         self.state = None
 
-        self.SCREEN_DIM = 500
 
     @property
     def n(self):
@@ -241,8 +245,8 @@ class PlanarEnv(core.Env):
         self._t += self.dt()
         t = np.arange(0, 2 * self._dt, self._dt)
         x0 = np.concatenate((
-                self._state['joint_state']['position'], 
-                self._state['joint_state']['velocity'], 
+                self._state["joint_state"]["position"],
+                self._state["joint_state"]["velocity"],
             ))
         ynext = odeint(self.continuous_dynamics, x0, t)
         self._state["joint_state"]["position"] = ynext[1][0 : self._n]
@@ -253,40 +257,11 @@ class PlanarEnv(core.Env):
     def render_specific(self, mode="human"):
         pass
 
-    def render_common_old(self, bounds):
-        from gym.envs.classic_control import (
-            rendering,
-        )  # pylint: disable=import-outside-toplevel
-
-        if self._state is None:
-            return None
-        if self._viewer is None:
-            if isinstance(bounds, list):
-                self._viewer = rendering.Viewer(500, 500)
-                self._viewer.set_bounds(
-                    -bounds[0], bounds[1], -bounds[1], bounds[1]
-                )
-            elif isinstance(bounds, dict):
-                ratio = (bounds["pos"]["high"][0] - bounds["pos"]["low"][0]) / (
-                    bounds["pos"]["high"][1] - bounds["pos"]["low"][1]
-                )
-                if ratio > 1:
-                    window_size = (1000, int(1000 / ratio))
-                else:
-                    window_size = (int(ratio * 1000), 1000)
-                self._viewer = rendering.Viewer(window_size[0], window_size[1])
-                self._viewer.set_bounds(
-                    bounds["pos"]["low"][0],
-                    bounds["pos"]["high"][0],
-                    bounds["pos"]["low"][1],
-                    bounds["pos"]["high"][1],
-                )
-        for obst in self._obsts:
-            obst.render_gym(self._viewer, rendering, t=self.t())
-        for goal in self._goals:
-            goal.render_gym(self._viewer, rendering, t=self.t())
-
-    def render_line(self, point_a, point_b):
+    def render_line(self, point_a, point_b, angle=0, color=(0, 0, 0)):
+        c, s = np.cos(angle), np.sin(angle)
+        tf_matrix = np.array(((c, -s), (s, c)))
+        point_a = np.dot(tf_matrix, point_a)
+        point_b = np.dot(tf_matrix, point_b)
         point_a[0] += self._offset
         point_a[1] += self._offset
         point_b[0] += self._offset
@@ -299,7 +274,7 @@ class PlanarEnv(core.Env):
             self.surf,
             start_pos=point_a,
             end_pos=point_b,
-            color=(0, 0, 0),
+            color=color,
         )
 
     def render_polygone(self, coordinates, color=(204, 204, 0)):
@@ -309,20 +284,55 @@ class PlanarEnv(core.Env):
         gfxdraw.filled_polygon(self.surf, coordinates, color)
 
 
-    def render_point(self, point_a, color=(204, 204, 0)):
+    def render_point(self, point_a, color=(204, 204, 0), radius=0.1):
         pos_x = point_a[0] * self._scale + self._offset * self._scale
         pos_y = point_a[1] * self._scale + self._offset * self._scale
         gfxdraw.filled_circle(
             self.surf,
             int(pos_x),
             int(pos_y),
-            int(0.1 * self._scale),
+            int(radius * self._scale),
             color,
         )
+    def render_sub_goal(self, sub_goal):
+        if sub_goal.dimension() == 2:
+            self.render_point(
+                sub_goal.position(t=self.t()),
+                radius=sub_goal.epsilon(),
+                color=(0, 255, 0)
+            )
+        if sub_goal.dimension() == 1:
+            angle = sub_goal.angle()
+            if sub_goal.indices()[0] == 0:
+                self.render_line(
+                    [sub_goal.position(t=self.t())[0], -10],
+                    [sub_goal.position(t=self.t())[0], 10],
+                    angle=angle,
+                    color=(0, 255, 0)
+                )
+            if sub_goal.indices()[0] == 1:
+                self.render_line(
+                    [-3, sub_goal.position(t=self.t())[0]],
+                    [3, sub_goal.position(t=self.t())[0]],
+                    angle=angle,
+                    color=(0, 255, 0)
+                )
 
-            
+    def render_scene(self):
+        for obst in self._obsts:
+            self.render_point(
+                obst.position(t=self.t()),
+                radius=obst.radius(),
+                color=(0, 0,0)
+            )
+        for goal in self._goals:
+            if isinstance(goal, GoalComposition):
+                for sub_goal in goal.sub_goals():
+                    self.render_sub_goal(sub_goal)
+            else:
+                self.render_sub_goal(goal)
+
     def render(self):
-        import pygame
         if self.screen is None:
             pygame.init()
             pygame.display.init()
@@ -332,6 +342,7 @@ class PlanarEnv(core.Env):
         self.surf = pygame.Surface((self.SCREEN_DIM, self.SCREEN_DIM))
         self.surf.fill((255, 255, 255))
         self.render_specific()
+        self.render_scene()
         self.surf = pygame.transform.flip(self.surf, False, True)
         self.screen.blit(self.surf, (0, 0))
 
@@ -341,8 +352,6 @@ class PlanarEnv(core.Env):
 
     def close(self):
         if self.screen is not None:
-            import pygame
-
             pygame.display.quit()
             pygame.quit()
             self.isopen = False
