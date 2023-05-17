@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "planarenvs"
-version = "1.3.2"
+version = "1.3.3"
 description = "Lightweight open-ai gym environments for planar kinematic chains."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 
