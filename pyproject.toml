@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "planarenvs"
-version = "1.3.2"
+version = "1.3.3"
 description = "Lightweight open-ai gym environments for planar kinematic chains."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.10"
-gym = "^0.22"
+gym = "^0.26.0"
 numpy = "^1.19,<1.24"
 pyglet = "^1.5.21"
 scipy = "^1.5"

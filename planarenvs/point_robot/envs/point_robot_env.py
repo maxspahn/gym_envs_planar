@@ -58,7 +58,7 @@ class PointRobotEnv(PlanarEnv):
         self.observation_space.spaces["joint_state"]["position"] = spaces.Box(
             low=-self._lim_up_pos, high=self._lim_up_pos, dtype=np.float64
         )
-        self.observation_space.spaces["xdot"] = spaces.Box(
+        self.observation_space.spaces["joint_state"]["velocity"] = spaces.Box(
             low=-self._lim_up_vel, high=self._lim_up_vel, dtype=np.float64
         )
 
