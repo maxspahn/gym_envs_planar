@@ -120,7 +120,7 @@ class WrongObservationError(Exception):
 
 class PlanarEnv(core.Env):
 
-    SCREEN_DIM = 500
+    SCREEN_DIM = 30
 
     def __init__(self, render: bool = False, dt=0.01):
         self._viewer = None
@@ -138,6 +138,7 @@ class PlanarEnv(core.Env):
         self._obsts = []
         self._goals = []
         self._sensors = []
+        self._outside_limits = False
         self.observation_space = None
         self._n = None
 
@@ -230,12 +231,12 @@ class PlanarEnv(core.Env):
                 observation['joint_state'],
                 self.observation_space['joint_state'],
             )
+            self._outside_limits = True
             warnings.warn(str(err))
         return observation
 
-    @abstractmethod
     def _terminal(self):
-        pass
+        return self._outside_limits
 
     @abstractmethod
     def continuous_dynamics(self, x, t):
@@ -262,14 +263,14 @@ class PlanarEnv(core.Env):
         tf_matrix = np.array(((c, -s), (s, c)))
         point_a = np.dot(tf_matrix, point_a)
         point_b = np.dot(tf_matrix, point_b)
-        point_a[0] += self._offset
-        point_a[1] += self._offset
-        point_b[0] += self._offset
-        point_b[1] += self._offset
-        point_a[0] *= self._scale
-        point_a[1] *= self._scale
-        point_b[0] *= self._scale
-        point_b[1] *= self._scale
+        point_a[0] *= self.SCREEN_DIM
+        point_a[1] *= self.SCREEN_DIM
+        point_b[0] *= self.SCREEN_DIM
+        point_b[1] *= self.SCREEN_DIM
+        point_a[0] += self._offsets[0]
+        point_a[1] += self._offsets[1]
+        point_b[0] += self._offsets[0]
+        point_b[1] += self._offsets[1]
         pygame.draw.line(
             self.surf,
             start_pos=point_a,
@@ -279,19 +280,29 @@ class PlanarEnv(core.Env):
 
     def render_polygone(self, coordinates, color=(204, 204, 0)):
         for coordinate in coordinates:
-            coordinate[0] = (coordinate[0] + self._offset) * self._scale
-            coordinate[1] = (coordinate[1] + self._offset) * self._scale
+            coordinate[0] = coordinate[0] * self.SCREEN_DIM + self._offsets[0]
+            coordinate[1] = coordinate[1] * self.SCREEN_DIM + self._offsets[1]
         gfxdraw.filled_polygon(self.surf, coordinates, color)
+
+    def render_rectangle(self, position, size, color=(204, 204, 0)):
+        corners = [
+            [position[0] - size[0] / 2, position[1] - size[1] / 2],
+            [position[0] + size[0] / 2, position[1] - size[1] / 2],
+            [position[0] + size[0] / 2, position[1] + size[1] / 2],
+            [position[0] - size[0] / 2, position[1] + size[1] / 2],
+        ]
+        self.render_polygone(corners, color=color)
+
 
 
     def render_point(self, point_a, color=(204, 204, 0), radius=0.1):
-        pos_x = point_a[0] * self._scale + self._offset * self._scale
-        pos_y = point_a[1] * self._scale + self._offset * self._scale
+        pos_x = point_a[0] * self.SCREEN_DIM + self._offsets[0]
+        pos_y = point_a[1] * self.SCREEN_DIM + self._offsets[1]
         gfxdraw.filled_circle(
             self.surf,
             int(pos_x),
             int(pos_y),
-            int(radius * self._scale),
+            int(radius * self.SCREEN_DIM),
             color,
         )
     def render_sub_goal(self, sub_goal):
@@ -320,11 +331,18 @@ class PlanarEnv(core.Env):
 
     def render_scene(self):
         for obst in self._obsts:
-            self.render_point(
-                obst.position(t=self.t()),
-                radius=obst.radius(),
-                color=(0, 0,0)
-            )
+            if obst.type() == 'box':
+                self.render_rectangle(
+                    obst.position(t=self.t()),
+                    obst.size(),
+                    color=(0, 0, 0),
+                )
+            if obst.type() == 'sphere':
+                self.render_point(
+                    obst.position(t=self.t()),
+                    radius=obst.radius(),
+                    color=(0, 0,0)
+                )
         for goal in self._goals:
             if isinstance(goal, GoalComposition):
                 for sub_goal in goal.sub_goals():
@@ -334,12 +352,23 @@ class PlanarEnv(core.Env):
 
     def render(self):
         if self.screen is None:
+            scale_x = self._limits["pos"]["high"][0] - self._limits["pos"]["low"][0]
+            scale_y = self._limits["pos"]["high"][1] - self._limits["pos"]["low"][1]
+            #self._scale = self.SCREEN_DIM / (
+            #    self._limits["pos"]["high"][0] - self._limits["pos"]["low"][0]
+            #)
+            #self._offset = self.SCREEN_DIM / (2 * self._scale)
+            self._scales = [self.SCREEN_DIM * 0.5 * scale_x, self.SCREEN_DIM * 0.5 * scale_y]
+            self._offsets = [
+                (0 - self._limits['pos']['low'][0])/scale_x * self.SCREEN_DIM * scale_x, 
+                (0 - self._limits['pos']['low'][1])/scale_y * self.SCREEN_DIM * scale_y, 
+            ]
             pygame.init()
             pygame.display.init()
             self.screen = pygame.display.set_mode(
-                (self.SCREEN_DIM, self.SCREEN_DIM)
+                (2 * self._scales[0], 2 * self._scales[1])
             )
-        self.surf = pygame.Surface((self.SCREEN_DIM, self.SCREEN_DIM))
+        self.surf = pygame.Surface((2 * self._scales[0], 2 * self._scales[1]))
         self.surf.fill((255, 255, 255))
         self.render_specific()
         self.render_scene()
