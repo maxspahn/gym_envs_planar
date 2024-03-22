@@ -35,6 +35,7 @@ class PointRobotEnv(PlanarEnv):
             },
         }
         self._lim_up_pos = self._limits["pos"]["high"]
+        self._lim_low_pos = self._limits["pos"]["low"]
         self._lim_up_vel = self._limits["vel"]["high"]
         self._lim_up_acc = self._limits["acc"]["high"]
         self._lim_up_for = self._limits["for"]["high"]
@@ -52,11 +53,12 @@ class PointRobotEnv(PlanarEnv):
                     )
 
         self._lim_up_pos = self._limits["pos"]["high"]
+        self._lim_low_pos = self._limits["pos"]["low"]
         self._lim_up_vel = self._limits["vel"]["high"]
         self._lim_up_acc = self._limits["acc"]["high"]
         self._lim_up_for = self._limits["for"]["high"]
         self.observation_space.spaces["joint_state"]["position"] = spaces.Box(
-            low=-self._lim_up_pos, high=self._lim_up_pos, dtype=np.float64
+            low=self._lim_low_pos, high=self._lim_up_pos, dtype=np.float64
         )
         self.observation_space.spaces["joint_state"]["velocity"] = spaces.Box(
             low=-self._lim_up_vel, high=self._lim_up_vel, dtype=np.float64
@@ -70,8 +72,6 @@ class PointRobotEnv(PlanarEnv):
         reward = -1.0 if not self._terminal() else 0.0
         return reward
 
-    def _terminal(self):
-        return False
 
     @abstractmethod
     def continuous_dynamics(self, x, t):
@@ -81,10 +81,6 @@ class PointRobotEnv(PlanarEnv):
 
         if self._state is None:
             return None
-        self._scale = self.SCREEN_DIM / (
-            self._limits["pos"]["high"][0] - self._limits["pos"]["low"][0]
-        )
-        self._offset = self.SCREEN_DIM / (2 * self._scale)
 
         x = self._state["joint_state"]["position"][0:2]
 
@@ -93,7 +89,7 @@ class PointRobotEnv(PlanarEnv):
             [self._limits["pos"]["high"][0], 0],
         )
         self.render_line(
-            [0, self._limits["pos"]["low"][0]],
-            [0, self._limits["pos"]["high"][0]],
+            [0, self._limits["pos"]["low"][1]],
+            [0, self._limits["pos"]["high"][1]],
         )
         self.render_point(x)
