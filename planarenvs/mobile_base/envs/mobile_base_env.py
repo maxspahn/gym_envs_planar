@@ -14,6 +14,12 @@ class MobileBaseEnv(PlanarEnv):
     MAX_POS = 5.0
     MAX_ACC = 1.0
     MAX_FOR = 100
+    _limits = {
+        "pos": {
+            "high": np.array([5, 5]),
+            "low": np.array([-5, -5]),
+        }
+    }
 
     def __init__(self, render=False, dt=0.01):
         super().__init__(render=render, dt=dt)

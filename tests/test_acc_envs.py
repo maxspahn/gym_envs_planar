@@ -45,7 +45,7 @@ def mobileRobotEnv():
     return env, init_pos, init_vel
 
 @pytest.fixture
-def allEnvs(pointRobotEnv, nLinkReacherEnv, mobileBaseEnv, mobileRobotEnv):
+def allEnvs(pointRobotEnv, nLinkReacherEnv, mobileBaseEnv):
     return list(locals().values())
 
 
