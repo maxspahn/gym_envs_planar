@@ -15,6 +15,12 @@ class NLinkReacherEnv(PlanarEnv):
     MAX_POS = pi
     MAX_ACC = 9 * pi
     MAX_TOR = 1000
+    _limits = {
+        "pos": {
+            "high": np.array([5, 5]),
+            "low": np.array([-5, -5]),
+        }
+    }
 
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
@@ -55,11 +61,10 @@ class NLinkReacherEnv(PlanarEnv):
         self.render_point([0.0, 0.0], color=(0, 0, 0))
 
     def render_link(self, i):
-        fk = self._fk.fk(
-            self._state["joint_state"]["position"], i, positionOnly=False
+        fk = self._fk.numpy(
+            self._state["joint_state"]["position"], i, position_only=False
         )
-        c, s = np.cos(fk[2]), np.sin(fk[2])
-        tf_matrix = np.array(((c, -s, fk[0]), (s, c, fk[1]), (0, 0, 1)))
+        tf_matrix = fk
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
         corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
         transformed_corner_points = []
@@ -68,8 +73,8 @@ class NLinkReacherEnv(PlanarEnv):
                 np.dot(tf_matrix, corner_point)[0:2]
             )
         self.render_polygone(transformed_corner_points, color=(0, 0, 0))
-        self.render_point(fk[0:2])
+        self.render_point(fk[0:2,2])
 
     def render_end_effector(self):
-        fk = self._fk.fk(self._state["joint_state"]["position"], self._n)
-        self.render_point(fk[0:2], color=(0.8 * 255, 0.8 * 255, 0.0 * 255))
+        fk = self._fk.numpy(self._state["joint_state"]["position"], self._n)
+        self.render_point(fk[0:2,2], color=(0.8 * 255, 0.8 * 255, 0.0 * 255))

@@ -23,7 +23,8 @@ def test_point_robot():
 
 def test_mobile_robot():
     from mobile_robot import run_mobile_robot
-    blueprint_test(run_mobile_robot)
+    #TODO Currently not available due to end of support in forwardkinematics for this robot
+    #blueprint_test(run_mobile_robot)
 
 
 def test_n_link_reacher():

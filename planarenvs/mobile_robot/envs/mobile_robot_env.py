@@ -20,6 +20,12 @@ class MobileRobotEnv(PlanarEnv):
     MAX_POS = np.pi
     MAX_ACC = 8 * np.pi
     MAX_TOR = 1000
+    _limits = {
+        "pos": {
+            "high": np.array([5, 5]),
+            "low": np.array([-5, -5]),
+        }
+    }
 
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
