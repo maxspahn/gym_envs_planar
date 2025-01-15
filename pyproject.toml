@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "planarenvs"
-version = "1.5.0"
+version = "1.5.1"
 description = "Lightweight open-ai gym environments for planar kinematic chains."
 authors = ["Max Spahn <m.spahn@tudelft.nl>"]
 
@@ -10,8 +10,8 @@ gym = "^0.26.0"
 forwardkinematics = "^1.2.3"
 mpscenes = "^0.4.6"
 pygame = "^2.6.1"
-pyglet = "^2.1.0"
 scipy = "^1.15.1"
+pyglet = "<2"
 
 
 [tool.poetry.group.dev]
