@@ -26,7 +26,7 @@ jobs:
       #----------------------------------------------
       #  -----  install & configure pdm -----
       #----------------------------------------------
-      - name: Install Poetry
+      - name: Install PDM
         uses: pdm-project/setup-pdm@v4
         with:
           cache: true
