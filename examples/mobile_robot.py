@@ -1,5 +1,5 @@
 # pylint: disable=import-outside-toplevel
-import gym
+import gymnasium as gym
 import planarenvs.mobile_robot  # pylint: disable=unused-import
 import numpy as np
 
@@ -18,11 +18,12 @@ def run_mobile_robot(
         xdot: [`xdot`, `qdot`].
     """
     n = 4
-    env = gym.make("mobile-robot-acc-v0", render=render, n=n, dt=0.01)
+    env = gym.make("mobile-robot-acc-v0", render=render, n=n, dt=0.01).unwrapped
     action = np.zeros(n)
     action[0] = 1.0
     action[3] = 1.0
-    ob = env.reset(pos=np.random.rand(n))
+    options = {'pos':np.random.rand(n)}
+    ob = env.reset(options=options)
     if obstacles:
         from planarenvs.scenes.obstacles import (
             sphereObst1,

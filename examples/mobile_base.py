@@ -1,5 +1,5 @@
 # pylint: disable=import-outside-toplevel
-import gym
+import gymnasium as gym
 import planarenvs.mobile_base  # pylint: disable=unused-import
 import numpy as np
 
@@ -14,9 +14,10 @@ def run_mobile_base(render=False, n_steps=1000, obstacles=False, goal=False):
         x: [`x`]
         xdot: [`xdot`].
     """
-    env = gym.make("mobile-base-vel-v0", render=render, dt=0.01)
+    env = gym.make("mobile-base-vel-v0", render=render, dt=0.01).unwrapped
     action = [0.4]
-    ob = env.reset(pos=np.array([-2.0]), vel=np.array([0.5]))
+    options = {"pos":np.array([-2.0]), "vel":np.array([0.5])}
+    ob = env.reset(options=options)
     if obstacles:
         from planarenvs.scenes.obstacles import (
             sphereObst1,

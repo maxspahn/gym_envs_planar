@@ -1,5 +1,5 @@
 # pylint: disable=import-outside-toplevel
-import gym
+import gymnasium as gym
 import planarenvs.n_link_reacher  # pylint: disable=unused-import
 import numpy as np
 
@@ -20,9 +20,10 @@ def run_n_link_reacher(
         xdot: [`qdot`]
     """
     n = 3
-    env = gym.make("nLink-reacher-vel-v0", render=render, n=n, dt=0.01)
+    env = gym.make("nLink-reacher-vel-v0", render=render, n=n, dt=0.01).unwrapped
     action = np.ones(n) * 8 * 0.01
-    ob = env.reset(pos=np.random.rand(n))
+    options = {'pos': np.random.rand(n)}
+    ob = env.reset()
     if obstacles:
         from planarenvs.scenes.obstacles import (
             sphereObst1,
