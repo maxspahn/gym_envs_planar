@@ -10,27 +10,20 @@ on:
     branches:
       - master
 
-jobs:
-  basic:
-    runs-on: ubuntu-20.04
 
+jobs:
+  pypi-publish:
+    name: upload release to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      # This permission is needed for private repositories.
+      contents: read
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
     steps:
-      #----------------------------------------------
-      #       check-out repo and set-up python
-      #----------------------------------------------
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-      #----------------------------------------------
-      #  -----  install & configure pdm -----
-      #----------------------------------------------
-      - name: Install PDM
-        uses: pdm-project/setup-pdm@v4
-        with:
-          cache: true
-      - name: Publish
+      - uses: actions/checkout@v4
+
+      - uses: pdm-project/setup-pdm@v4
+
+      - name: Publish package distributions to PyPI
         run: pdm publish
