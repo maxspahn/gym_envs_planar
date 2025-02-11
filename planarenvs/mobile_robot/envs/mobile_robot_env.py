@@ -1,7 +1,8 @@
 import numpy as np
 from abc import abstractmethod
 
-from forwardkinematics.planarFks.mobileRobotFk import MobileRobotFk
+#from forwardkinematics.planarFks.mobileRobotFk import MobileRobotFk
+from forwardkinematics.planarFks.planarArmFk import PlanarArmFk
 
 from planarenvs.planar_common.planar_env import PlanarEnv
 
@@ -26,6 +27,7 @@ class MobileRobotEnv(PlanarEnv):
             "low": np.array([-5, -5]),
         }
     }
+    _joint_color = (0.1 * 255, 0.2 * 255, 0.9 * 255)
 
     def __init__(self, render=False, n=2, dt=0.01):
         super().__init__(render=render, dt=dt)
@@ -43,7 +45,7 @@ class MobileRobotEnv(PlanarEnv):
             np.array([self.MAX_FOR_BASE]), np.ones(self._n - 1) * self.MAX_TOR
         )
         self.set_spaces()
-        self._fk = MobileRobotFk(self._n, baseHeight=self.BASE_HEIGHT)
+        self._fk = PlanarArmFk(self._n-1)
 
     def join_limits(self, lim_bas, lim_arm):
         return np.concatenate((lim_bas, lim_arm))
@@ -97,25 +99,32 @@ class MobileRobotEnv(PlanarEnv):
             transformed_corner_points.append(
                 np.dot(tf_matrix, corner_point)[0:2]
             )
-        self.render_polygone(transformed_corner_points)
-        self.render_point([p0[0], self.BASE_HEIGHT + 0.2])
+        self.render_polygone(transformed_corner_points, color=self._joint_color)
+        self.render_point([p0[0], self.BASE_HEIGHT + 0.2], color=self._joint_color)
+
+    def compute_fk(self, i: int) -> np.ndarray:
+        q_current = self._state["joint_state"]["position"]
+        q_base = q_current[0]
+        fk_base = np.array([[1, 0, q_base], [0, 1, self.BASE_HEIGHT + 0.2], [0, 0, 1]])
+        fk = self._fk.numpy(
+            q_current[1:],
+            child_link=i-1,
+            position_only=False,
+        )
+        return np.dot(fk_base, fk)
 
     def render_link(self, i):
-        fk = self._fk.fk(
-            self._state["joint_state"]["position"], i, positionOnly=False
-        )
-        c, s = np.cos(fk[2]), np.sin(fk[2])
-        tf_matrix = np.array(((c, -s, fk[0]), (s, c, fk[1]), (0, 0, 1)))
+        fk = self.compute_fk(i)
         l, r, t, b = 0, self.LINK_LENGTH, 0.01, -0.01
         corner_points = [[l, b, 1], [l, t, 1], [r, t, 1], [r, b, 1]]
         transformed_corner_points = []
         for corner_point in corner_points:
             transformed_corner_points.append(
-                np.dot(tf_matrix, corner_point)[0:2]
+                np.dot(fk, corner_point)[0:2]
             )
         self.render_polygone(transformed_corner_points, color=(0, 0, 0))
-        self.render_point(fk[0:2])
+        self.render_point(fk[0:2, 2], color=self._joint_color)
 
     def render_end_effector(self):
-        fk = self._fk.fk(self._state["joint_state"]["position"], self._n)
-        self.render_point(fk[0:2], color=(0.8 * 255, 0.8 * 255, 0.0 * 255))
+        fk = self.compute_fk(self.n)
+        self.render_point(fk[0:2, 2], color=self._joint_color)

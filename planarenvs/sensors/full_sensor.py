@@ -1,6 +1,6 @@
 from planarenvs.sensors.sensor_common import Sensor
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
 
 
 class FullSensor(Sensor):

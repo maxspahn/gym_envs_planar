@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Any
 import time
 import pygame
 from pygame import gfxdraw
@@ -6,9 +7,9 @@ import numpy as np
 from scipy.integrate import odeint
 import warnings
 
-from gym import core
-from gym.utils import seeding
-from gym import spaces
+from gymnasium import core
+from gymnasium.utils import seeding
+from gymnasium import spaces
 
 from mpscenes.goals.goal_composition import GoalComposition
 
@@ -120,14 +121,14 @@ class WrongObservationError(Exception):
 
 class PlanarEnv(core.Env):
 
-    SCREEN_DIM = 30
+    SCREEN_DIM = 200
 
     def __init__(self, render: bool = False, dt=0.01):
         self._viewer = None
         self._state = {
             "joint_state": {
-                "position": None,
-                "velocity": None
+                "position": np.empty(0),
+                "velocity": np.empty(0),
             }
         }
         self._sensor_state = None
@@ -140,7 +141,7 @@ class PlanarEnv(core.Env):
         self._sensors = []
         self._outside_limits = False
         self.observation_space = None
-        self._n = None
+        self._n: int = 0
 
         self.screen_width = 600
         self.screen_height = 400
@@ -151,11 +152,11 @@ class PlanarEnv(core.Env):
 
 
     @property
-    def n(self):
+    def n(self) -> int:
         return self._n
 
     @n.setter
-    def n(self, n):
+    def n(self, n) -> None:
         self._n = n
 
     @n.deleter
@@ -194,7 +195,17 @@ class PlanarEnv(core.Env):
         self._sensors = []
         self._t = 0.0
 
-    def reset(self, pos: np.ndarray = None, vel: np.ndarray = None) -> dict:
+    def reset(
+            self,
+            seed: int | None = None,
+            options: dict[str, Any] | None = None,
+        ) -> dict:
+        if isinstance(options, dict):
+            pos = options['pos'] if 'pos' in options else None
+            vel = options['vel'] if 'vel' in options else None
+        else:
+            pos = None
+            vel = None
         self.reset_common()
         if not isinstance(pos, np.ndarray) or not pos.size == self._n:
             pos = np.zeros(self._n)

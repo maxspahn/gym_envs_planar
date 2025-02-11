@@ -1,6 +1,6 @@
 import numpy as np
 from abc import abstractmethod
-from gym import spaces
+from gymnasium import spaces
 import logging
 
 from planarenvs.planar_common.planar_env import PlanarEnv

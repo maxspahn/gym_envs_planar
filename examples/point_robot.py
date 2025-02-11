@@ -1,6 +1,6 @@
 # pylint: disable=import-outside-toplevel
-import gym
-import planarenvs.point_robot  # pylint: disable=unused-import
+import gymnasium as gym
+from planarenvs.point_robot.envs.vel import PointRobotVelEnv
 import numpy as np
 
 # This example showcases the psedo-sensor and requires goals and obstacles.
@@ -35,10 +35,11 @@ def run_point_robot(
         ObstaclePosition: positions of the obstacles
         ObstacleDistance: delta_x and delta_y to the obstacles
     """
-    env = gym.make("point-robot-vel-v0", render=render, dt=0.01)
-    init_pos = np.array([0.0, 0.0])
+    env:PointRobotVelEnv = gym.make("point-robot-vel-v0", render=render, dt=0.01).unwrapped
+    init_pos = np.array([0.5, 0.0])
     init_vel = np.array([0.0, 0.0])
-    ob = env.reset(pos=init_pos, vel=init_vel)
+    options = {'pos': init_pos, 'vel': init_vel}
+    ob = env.reset(options=options)
     env.reset_limits(
         pos={"high": np.array([2.0, 3.0]), "low": np.array([-2.0, -3.0])}
     )
